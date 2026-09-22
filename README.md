@@ -89,8 +89,12 @@ Notas:
 ## 5. Personas y perfil de padres
 
 Cada persona tiene su propio PIN. La primera vez que alguien elige su nombre
-en un móvil, la app le pide crear uno; a partir de ahí ese móvil recuerda
-quién es y no vuelve a preguntar.
+en un móvil, la app le pide crearlo por duplicado (escribirlo y repetirlo); a
+partir de ahí ese móvil recuerda quién es y no vuelve a preguntar.
+
+No hay ningún "modo padres" que activar: los permisos van pegados a la
+persona. Si entras como alguien con `is_parent = true`, ya los tienes.
+Añadir gente a la casa también es cosa de padres, desde sus ajustes.
 
 Quien esté marcado como **padre o madre** (`members.is_parent`) ve, además:
 
@@ -108,7 +112,27 @@ Quien esté marcado como **padre o madre** (`members.is_parent`) ve, además:
 Si alguien olvida su PIN y no hay ningún padre a mano, se borra desde
 Supabase: tabla `members`, columna `pin` a `null`.
 
-## 6. Pruebas con foto
+## 6. Rechazos y avisos
+
+Un padre o madre puede **rechazar** dos cosas, siempre escribiendo un motivo:
+
+- Una **tarea** ya marcada como hecha, desde el ✕ de su línea en el historial.
+- Un **canje** pendiente, desde el ✕ de la sección *Canjes pendientes*.
+
+Una tarea rechazada **no se borra**: se queda en el historial tachada, con
+quién la rechazó y por qué, y pasa a valer 0 puntos. El ↩ la restaura y
+devuelve los puntos. Un canje rechazado devuelve los puntos.
+
+Quien lo recibe lo ve en **Para ti**, arriba del todo de la pantalla de
+tareas, con el motivo escrito tal cual y cuántos puntos se mueven. Se quita
+dándole a *Vale* (`seen = true`). Ahí salen también los canjes aprobados.
+
+Si la persona está en la lista de la compra en vez de en tareas, le aparece un
+aviso rojo arriba que la lleva a la sección.
+
+**Antes de usarlo hay que correr `supabase-migracion-4.sql`.**
+
+## 7. Pruebas con foto
 
 Cada tarea tiene, al lado de *Hecho*, un botón de cámara. Abre una ventana con
 dos huecos, **Antes** y **Después**, y marca la tarea como hecha igual que el
@@ -147,9 +171,16 @@ Detalles de implementación:
   `LocalStore` y `SupaStore`, con la misma API (`load`, `insert`, `update`,
   `remove`, `onChange`). Cambiar de una a otra es sólo rellenar las dos
   constantes.
-- **Puntos calculados, no guardados**: el saldo de cada uno sale de
-  `logs` menos `redemptions`, así dos móviles escribiendo a la vez no pueden
-  descuadrar el marcador.
+- **Dos contadores, no uno.** El **saldo** (`logs` menos `redemptions`) es lo
+  que te queda por gastar y baja al canjear. Los **puntos del mes**
+  (`earnedIn`) solo suman lo ganado en el mes que corre y **no bajan al
+  canjear**, así que quien gasta sus puntos no se queda fuera del ranking.
+- **El reinicio mensual no reinicia nada.** Los puntos del mes se calculan
+  filtrando `logs` por fecha, así que el 1 de cada mes el marcador vuelve a
+  cero solo. No hay proceso programado que pueda fallar, y el histórico sigue
+  entero: la sección *Meses anteriores* saca de ahí quién ganó cada mes.
+- **Puntos calculados, no guardados**: ningún total vive en una columna, así
+  que dos móviles escribiendo a la vez no pueden descuadrar el marcador.
 - **Categorías automáticas**: `guessCat()` clasifica "tomates" en *Fresco* y
   "fairy" en *Limpieza* con un diccionario de palabras. Amplíalo en
   `KEYWORDS`.
@@ -157,6 +188,11 @@ Detalles de implementación:
   "leche x2" y separa la cantidad del producto.
 - **Modo súper**: agranda los toques, esconde quién añadió qué y quita las
   cabeceras de categoría, para ir tachando con el carro en la mano.
+- **Filtro por quién lo pidió**: chips encima de la lista, con el número de
+  cosas de cada uno. Solo aparecen si hay más de una persona con cosas
+  pendientes, y se esconden en modo súper (en el súper interesa la lista
+  entera). *Vaciar* respeta el filtro, y si escribes algo mientras miras la
+  lista de otro, el filtro se quita solo para que veas lo que acabas de poner.
 
 ## Ideas para después
 

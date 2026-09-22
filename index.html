@@ -186,7 +186,10 @@
   }
   .score .nm{font-size:12px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:5px}
   .score .pts{font-family:var(--font-m);font-weight:600;font-size:25px;letter-spacing:-.02em;margin-top:3px}
-  .score .pts span{font-family:var(--font-b);font-size:11px;color:var(--faint);font-weight:500;margin-left:3px}
+  .score .pts span{font-family:var(--font-b);font-size:10.5px;color:var(--faint);font-weight:500;margin-left:4px}
+  .score .saldo{font-size:11px;color:var(--faint);font-weight:500;margin-top:3px;
+    font-variant-numeric:tabular-nums}
+  .score.leader .saldo{color:var(--gold)}
   .score.leader{border-color:var(--gold);background:var(--gold-soft)}
   button.score{cursor:pointer}
 
@@ -254,6 +257,52 @@
   .sheet h2{font-size:19px}
   .sheet .row{justify-content:flex-end}
 
+  /* ---------- filtro por persona ---------- */
+  .filters{display:flex;gap:7px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none}
+  .filters::-webkit-scrollbar{display:none}
+  .chip{
+    flex:none;display:inline-flex;align-items:center;gap:6px;
+    border:1px solid var(--line);background:var(--surface);color:var(--muted);
+    border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;
+  }
+  .chip .n{font-family:var(--font-m);font-size:11.5px;color:var(--faint)}
+  .chip[aria-pressed="true"]{
+    background:var(--ink);border-color:var(--ink);color:var(--ground);
+  }
+  .chip[aria-pressed="true"] .n{color:var(--ground);opacity:.7}
+
+  /* ---------- avisos ---------- */
+  .notice{
+    display:flex;gap:11px;align-items:flex-start;padding:12px 13px;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .notice:last-child{border-bottom:0}
+  .notice .mark{
+    width:26px;height:26px;flex:none;border-radius:8px;display:grid;place-items:center;
+    font-size:14px;font-weight:700;
+  }
+  .notice.bad .mark{background:var(--danger-soft);color:var(--danger)}
+  .notice.good .mark{background:var(--accent-soft);color:var(--accent)}
+  .notice .body{flex:1;min-width:0}
+  .notice .head{font-weight:600;font-size:14px;overflow-wrap:anywhere}
+  .notice .why{font-size:12.5px;color:var(--muted);margin-top:3px;overflow-wrap:anywhere}
+  .notice .why em{font-style:normal;color:var(--ink)}
+  .notice .when{font-size:11px;color:var(--faint);margin-top:3px}
+  .okbtn{
+    border:1px solid var(--line);background:transparent;border-radius:9px;
+    padding:6px 11px;font-weight:600;font-size:13px;flex:none;color:var(--muted);
+  }
+  .banner-avisos{
+    display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+    background:var(--danger-soft);border:1px solid transparent;border-radius:var(--radius);
+    padding:11px 13px;margin-top:16px;font-size:13.5px;font-weight:600;color:var(--danger);
+  }
+  .banner-avisos span{flex:1;min-width:0}
+
+  /* se tacha lo que se hizo, nunca el motivo del rechazo */
+  .hist .row-h.rejected .txt > span:first-child{text-decoration:line-through;opacity:.6}
+  .hist .why-h{font-size:11.5px;color:var(--danger);margin-top:2px;text-decoration:none;display:block}
+
   /* ---------- pruebas con foto ---------- */
   .proof-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
   .slot label{
@@ -300,9 +349,9 @@
     <h1 style="font-size:28px">¿Quién eres?</h1>
     <p class="lead">Se guarda en este móvil. Lo que añadas quedará con tu nombre.</p>
     <div class="who-grid" id="who-grid"></div>
-    <div class="row">
-      <button class="btn ghost" id="who-add">+ Añadir persona</button>
-    </div>
+    <p class="lead" style="font-size:12.5px;margin-top:18px">
+      ¿No estás en la lista? Que te añada papá o mamá desde sus ajustes.
+    </p>
   </div>
 </div>
 
@@ -312,10 +361,16 @@
     <h1 style="font-size:26px" id="pin-title">Hola</h1>
     <p class="lead" id="pin-lead">Escribe tu PIN.</p>
     <div class="field">
-      <label for="pin-field">PIN</label>
+      <label for="pin-field" id="pin-label">PIN</label>
       <input id="pin-field" class="pinbig" type="tel" inputmode="numeric" maxlength="6"
-             autocomplete="off" enterkeyhint="done" placeholder="····">
+             autocomplete="off" enterkeyhint="next" placeholder="····">
       <span class="hint" id="pin-hint"></span>
+    </div>
+    <div class="field" id="pin-confirm-wrap" hidden>
+      <label for="pin-confirm">Repítelo</label>
+      <input id="pin-confirm" class="pinbig" type="tel" inputmode="numeric" maxlength="6"
+             autocomplete="off" enterkeyhint="done" placeholder="····">
+      <span class="hint">Para asegurarnos de que no hay ninguna errata.</span>
     </div>
     <div class="row">
       <button class="btn primary" id="pin-ok">Entrar</button>
@@ -363,22 +418,6 @@
       <button class="btn" data-theme-set="dark">Oscuro</button>
     </div>
 
-    <div class="section-label">Etiquetas NFC</div>
-    <div class="card" style="padding:13px;font-size:13.5px;color:var(--muted)">
-      Graba cada pegatina con una de estas direcciones (app NFC Tools → Escribir → URL):
-      <div style="margin-top:9px;display:flex;flex-direction:column;gap:6px">
-        <code class="num" id="url-nevera" style="background:var(--surface-2);padding:7px 9px;border-radius:8px;font-size:12px;overflow-wrap:anywhere"></code>
-        <code class="num" id="url-tareas" style="background:var(--surface-2);padding:7px 9px;border-radius:8px;font-size:12px;overflow-wrap:anywhere"></code>
-      </div>
-    </div>
-
-    <div class="section-label">Datos</div>
-    <div class="card" style="padding:13px">
-      <div style="font-size:13.5px;color:var(--muted)" id="mode-line">—</div>
-      <div class="row">
-        <button class="btn ghost" id="reset-all" style="color:var(--danger)">Olvidar este móvil</button>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -394,10 +433,15 @@
 
   <!-- ---- NEVERA ---- -->
   <section id="view-nevera">
+    <button class="banner-avisos" id="banner-avisos" hidden>
+      <span id="banner-avisos-txt"></span>
+      <span aria-hidden="true">→</span>
+    </button>
     <div class="section-label" style="margin-top:16px">
       <span id="pend-count">Por comprar</span>
       <button class="btn ghost" id="btn-super" style="margin-left:auto;flex:none;order:4">Modo súper</button>
     </div>
+    <div class="filters" id="filters" role="group" aria-label="Filtrar por quién lo pidió" hidden></div>
     <div class="card" id="list-pending"></div>
 
     <div class="section-label" id="label-done">
@@ -409,10 +453,16 @@
 
   <!-- ---- TAREAS ---- -->
   <section id="view-tareas" hidden>
-    <div class="section-label" style="margin-top:16px">Puntos de la casa
+    <div class="section-label" id="label-avisos" style="margin-top:16px" hidden>Para ti</div>
+    <div class="card" id="avisos" hidden></div>
+
+    <div class="section-label"><span id="month-label">Ranking del mes</span>
       <button class="btn ghost" id="btn-adjust" style="margin-left:auto;flex:none;order:4" hidden>Ajustar puntos</button>
     </div>
     <div class="scoreboard" id="scoreboard"></div>
+
+    <div class="section-label" id="label-champions" hidden>Meses anteriores</div>
+    <div class="card hist" id="champions" hidden></div>
 
     <div class="section-label">Tareas
       <button class="btn ghost" id="btn-newtask" style="margin-left:auto;flex:none;order:4" hidden>+ Nueva</button>
@@ -420,6 +470,7 @@
     <div class="card" id="list-tasks"></div>
 
     <div class="section-label">Recompensas
+      <span id="my-balance" class="pill gold" style="margin-left:6px;order:2"></span>
       <button class="btn ghost" id="btn-newreward" style="margin-left:auto;flex:none;order:4" hidden>+ Nueva</button>
     </div>
     <div class="card" id="list-rewards"></div>
@@ -613,7 +664,7 @@ const SupaStore = {
    ============================================================ */
 const State = {
   store:null, db:null, me:null, zone:"nevera",
-  superMode:false, histLimit:12
+  superMode:false, histLimit:12, filter:null
 };
 
 function $(id){ return document.getElementById(id); }
@@ -630,11 +681,77 @@ function memberName(id){ const m = member(id); return m ? m.name : "Alguien"; }
 function memberColor(id){ const m = member(id); return m ? m.color : "#888"; }
 function isParent(){ return !!(State.me && State.me.is_parent); }
 
-function pointsOf(memberId){
-  const earned = (State.db.logs||[]).filter(l=>l.member_id===memberId).reduce((a,l)=>a+(l.points||0),0);
+/* Dos contadores distintos, a propósito:
+
+   SALDO  — lo que te queda por gastar. Sube al hacer tareas y baja al
+            canjear. Es lo que decide si puedes pedir una recompensa.
+   MES    — lo que has ganado en el mes que corre. Canjear NO lo toca, así
+            que el ranking no castiga a quien gasta sus puntos. Se "reinicia"
+            solo cada mes porque se calcula filtrando por fecha: no hay nada
+            que borrar ni ningún proceso que pueda fallar, y el histórico de
+            meses anteriores sigue ahí para consultarlo. */
+
+function monthKey(iso){
+  const d = new Date(iso);
+  return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+}
+function thisMonth(){ return monthKey(new Date().toISOString()); }
+
+function monthLabel(mk){
+  const [y, m] = mk.split("-").map(Number);
+  const s = new Date(y, m - 1, 1).toLocaleDateString("es-ES", {month:"long", year:"numeric"});
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/* Una tarea rechazada se queda en el historial tachada, pero deja de sumar. */
+function validLogs(){ return (State.db.logs||[]).filter(l => !l.rejected); }
+
+/* Saldo canjeable */
+function balanceOf(memberId){
+  const earned = validLogs().filter(l=>l.member_id===memberId).reduce((a,l)=>a+(l.points||0),0);
   const spent  = (State.db.redemptions||[]).filter(r=>r.member_id===memberId && r.status!=="rechazado")
                   .reduce((a,r)=>a+(r.cost||0),0);
   return earned - spent;
+}
+
+/* Ganados en un mes concreto, sin descontar canjes */
+function earnedIn(memberId, mk){
+  return validLogs()
+    .filter(l => l.member_id === memberId && monthKey(l.created_at) === mk)
+    .reduce((a,l) => a + (l.points||0), 0);
+}
+
+/* Meses con actividad, del más reciente al más antiguo */
+function monthsWithActivity(){
+  const set = new Set(validLogs().map(l => monthKey(l.created_at)));
+  return [...set].sort().reverse();
+}
+
+/* Lo que le ha pasado a ESTE usuario y todavía no ha visto.
+   Los logs se guardan como 'hizo "Sacar la basura"' para que el historial se
+   lea solo; para el aviso hace falta el nombre pelado. */
+function avisosOf(memberId){
+  const out = [];
+  (State.db.logs||[]).forEach(l => {
+    if(l.member_id === memberId && l.rejected && !l.seen){
+      const m = (l.title||"").match(/^hizo\s+"(.*)"$/);
+      const what = m ? "«" + m[1] + "»" : (l.title||"").replace(/^—\s*/, "");
+      out.push({kind:"log", id:l.id, bad:true, t:l.rejected_at || l.created_at,
+                head:"Te han rechazado " + what, why:l.reject_reason,
+                by:l.rejected_by, pts:l.points});
+    }
+  });
+  (State.db.redemptions||[]).forEach(r => {
+    if(r.member_id !== memberId || r.seen) return;
+    if(r.status === "rechazado")
+      out.push({kind:"red", id:r.id, bad:true, t:r.created_at,
+                head:"Te han rechazado el canje de «" + r.title + "»",
+                why:r.reject_reason, pts:r.cost});
+    else if(r.status === "aprobado")
+      out.push({kind:"red", id:r.id, bad:false, t:r.created_at,
+                head:"Te han aprobado «" + r.title + "»", why:null, pts:r.cost});
+  });
+  return out.sort((a,b)=> (b.t||"").localeCompare(a.t||""));
 }
 
 /* ============================================================
@@ -882,6 +999,18 @@ function renderHeader(){
   $("zone-title").textContent  = nevera ? "Lista de la compra" : "Tareas y puntos";
   $("view-nevera").hidden = !nevera;
   $("view-tareas").hidden = nevera;
+
+  const avisos = avisosOf(State.me.id);
+  const malas = avisos.filter(a => a.bad).length;
+  const ban = $("banner-avisos");
+  ban.hidden = !(nevera && avisos.length);
+  if(!ban.hidden){
+    $("banner-avisos-txt").textContent = malas
+      ? (malas === 1 ? "Te han rechazado algo. Míralo" : "Tienes " + malas + " rechazos por mirar")
+      : "Tienes novedades en tus puntos";
+    ban.style.background = malas ? "var(--danger-soft)" : "var(--accent-soft)";
+    ban.style.color = malas ? "var(--danger)" : "var(--accent)";
+  }
   $("addbar").hidden = !nevera;
   $("app").style.paddingBottom = nevera ? "88px" : "24px";
 
@@ -899,15 +1028,26 @@ function renderHeader(){
 /* ---------- lista de la compra ---------- */
 function renderNevera(){
   const items = (State.db.items || []).slice();
-  const pending = items.filter(i => !i.done);
-  const done = items.filter(i => i.done).sort((a,b)=> (b.done_at||"").localeCompare(a.done_at||""));
+  const allPending = items.filter(i => !i.done);
 
-  $("pend-count").textContent = pending.length ? `Por comprar · ${pending.length}` : "Por comprar";
+  renderFilters(allPending);
+
+  // el filtro solo esconde; no borra ni cambia nada de la lista
+  const keep = i => !State.filter || i.added_by === State.filter;
+  const pending = allPending.filter(keep);
+  const done = items.filter(i => i.done && keep(i))
+                    .sort((a,b)=> (b.done_at||"").localeCompare(a.done_at||""));
+
+  const quien = State.filter ? " de " + memberName(State.filter) : "";
+  $("pend-count").textContent = pending.length
+    ? `Por comprar${quien} · ${pending.length}` : `Por comprar${quien}`;
 
   const box = $("list-pending");
   box.textContent = "";
   if(!pending.length){
-    box.appendChild(el("div","empty","Nada pendiente. La nevera está a tope."));
+    box.appendChild(el("div","empty", State.filter
+      ? memberName(State.filter) + " no ha pedido nada."
+      : "Nada pendiente. La nevera está a tope."));
   }else{
     const groups = {};
     pending.forEach(i => { (groups[i.category || "Otros"] ||= []).push(i); });
@@ -936,6 +1076,47 @@ function renderNevera(){
     done.slice(0,30).forEach(i => ul.appendChild(itemRow(i)));
     dbox.appendChild(ul);
   }
+}
+
+/* Chips de "quién lo pidió". Solo aparecen cuando hay más de una persona
+   con cosas pendientes: con una sola, el filtro no filtra nada. */
+function renderFilters(pending){
+  const bar = $("filters");
+  const counts = new Map();
+  pending.forEach(i => counts.set(i.added_by, (counts.get(i.added_by) || 0) + 1));
+
+  if(counts.size < 2 || State.superMode){
+    bar.hidden = true;
+    bar.textContent = "";
+    if(State.filter && !counts.has(State.filter)) State.filter = null;
+    return;
+  }
+
+  // si a quien filtrabas ya no le queda nada, volvemos a "Todos"
+  if(State.filter && !counts.has(State.filter)) State.filter = null;
+
+  bar.hidden = false;
+  bar.textContent = "";
+
+  const chip = (id, label, n) => {
+    const b = el("button","chip");
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(State.filter === id));
+    if(id){
+      const dot = el("span","dot");
+      dot.style.background = memberColor(id);
+      b.appendChild(dot);
+    }
+    b.appendChild(document.createTextNode(label));
+    b.appendChild(el("span","n", String(n)));
+    b.onclick = () => { State.filter = State.filter === id ? null : id; render(); };
+    return b;
+  };
+
+  bar.appendChild(chip(null, "Todos", pending.length));
+  (State.db.members || [])
+    .filter(m => counts.has(m.id))
+    .forEach(m => bar.appendChild(chip(m.id, m.name, counts.get(m.id))));
 }
 
 function itemRow(i){
@@ -993,6 +1174,9 @@ async function addItem(raw){
     added_by:State.me.id, created_at:now(),
     done:false, done_by:null, done_at:null
   };
+  // si estabas mirando la lista de otro, quítalo o lo que acabas de
+  // escribir desaparecería al momento
+  if(State.filter && State.filter !== State.me.id) State.filter = null;
   State.db.items.push(row);
   render();
   await State.store.insert("items", row);
@@ -1002,22 +1186,32 @@ async function addItem(raw){
 /* ---------- tareas y puntos ---------- */
 function renderTareas(){
   const members = State.db.members || [];
-  const scores = members.map(m => ({m, p:pointsOf(m.id)})).sort((a,b)=> b.p - a.p);
-  const top = scores.length ? scores[0].p : 0;
+  const mk = thisMonth();
+
+  renderAvisos();
+
+  $("month-label").textContent = "Ranking de " + monthLabel(mk).toLowerCase();
+
+  const scores = members.map(m => ({m, mes:earnedIn(m.id, mk), saldo:balanceOf(m.id)}))
+                        .sort((a,b)=> b.mes - a.mes);
+  const top = scores.length ? scores[0].mes : 0;
 
   const sb = $("scoreboard"); sb.textContent = "";
-  scores.forEach(({m,p}) => {
-    const c = el(isParent() ? "button" : "div", "score" + (p === top && p > 0 ? " leader" : ""));
+  scores.forEach(({m, mes, saldo}) => {
+    const c = el(isParent() ? "button" : "div", "score" + (mes === top && mes > 0 ? " leader" : ""));
     if(isParent()){ c.type = "button"; c.onclick = () => adjustPoints(m); }
     const nm = el("div","nm");
     const dot = el("span","dot"); dot.style.background = m.color;
     nm.appendChild(dot); nm.appendChild(document.createTextNode(m.name));
     c.appendChild(nm);
-    const pts = el("div","pts"); pts.textContent = p;
-    pts.appendChild(el("span",null,"pts"));
+    const pts = el("div","pts"); pts.textContent = mes;
+    pts.appendChild(el("span",null,"este mes"));
     c.appendChild(pts);
+    c.appendChild(el("div","saldo","Saldo " + saldo));
     sb.appendChild(c);
   });
+
+  renderChampions();
 
   // ---- tareas ----
   const tb = $("list-tasks"); tb.textContent = "";
@@ -1059,7 +1253,8 @@ function renderTareas(){
 
   // ---- recompensas ----
   const rb = $("list-rewards"); rb.textContent = "";
-  const myPts = pointsOf(State.me.id);
+  const myPts = balanceOf(State.me.id);
+  $("my-balance").textContent = "Tu saldo: " + myPts;
   const rewards = (State.db.rewards || []).filter(r => r.active !== false).sort((a,b)=>a.cost-b.cost);
   if(!rewards.length) rb.appendChild(el("div","empty","Sin recompensas todavía."));
   rewards.forEach(r => {
@@ -1100,16 +1295,13 @@ function renderTareas(){
     if(isParent()){
       const ok = el("button","doit","Aprobar");
       ok.onclick = async () => {
-        await State.store.update("redemptions", r.id, {status:"aprobado"});
+        await State.store.update("redemptions", r.id, {status:"aprobado", seen:false});
         toast("Canje aprobado"); await refresh();
       };
       row.appendChild(ok);
       const no = el("button","del","✕");
-      no.setAttribute("aria-label","Rechazar canje");
-      no.onclick = async () => {
-        await State.store.update("redemptions", r.id, {status:"rechazado"});
-        toast("Canje rechazado, puntos devueltos"); await refresh();
-      };
+      no.setAttribute("aria-label","Rechazar el canje de " + r.title);
+      no.onclick = () => rejectRedemption(r);
       row.appendChild(no);
     }else{
       row.appendChild(el("span","pill","Esperando a papá o mamá"));
@@ -1118,6 +1310,75 @@ function renderTareas(){
   });
 
   renderHistory();
+}
+
+function renderAvisos(){
+  const box = $("avisos");
+  const list = avisosOf(State.me.id);
+  $("label-avisos").hidden = !list.length;
+  box.hidden = !list.length;
+  if(!list.length) return;
+
+  box.textContent = "";
+  list.forEach(a => {
+    const row = el("div","notice " + (a.bad ? "bad" : "good"));
+    row.appendChild(el("div","mark", a.bad ? "✕" : "✓"));
+
+    const body = el("div","body");
+    body.appendChild(el("div","head", a.head));
+
+    if(a.why){
+      const why = el("div","why");
+      why.appendChild(document.createTextNode("Motivo: "));
+      why.appendChild(el("em", null, a.why));
+      body.appendChild(why);
+    }else if(a.bad){
+      body.appendChild(el("div","why","No han dejado motivo."));
+    }
+
+    const detalle = a.bad
+      ? (a.kind === "log" ? "No te cuentan esos " + a.pts + " puntos" : "Te devuelven " + a.pts + " puntos")
+      : "Se te han descontado " + a.pts + " puntos";
+    body.appendChild(el("div","when", detalle + " · " + ago(a.t)));
+    row.appendChild(body);
+
+    const ok = el("button","okbtn","Vale");
+    ok.onclick = async () => {
+      await State.store.update(a.kind === "log" ? "logs" : "redemptions", a.id, {seen:true});
+      await refresh();
+    };
+    row.appendChild(ok);
+    box.appendChild(row);
+  });
+}
+
+function renderChampions(){
+  const box = $("champions");
+  const past = monthsWithActivity().filter(mk => mk !== thisMonth()).slice(0, 12);
+  $("label-champions").hidden = !past.length;
+  box.hidden = !past.length;
+  if(!past.length) return;
+
+  box.textContent = "";
+  past.forEach(mk => {
+    const scores = (State.db.members||[])
+      .map(m => ({m, p:earnedIn(m.id, mk)}))
+      .filter(s => s.p > 0)
+      .sort((a,b)=> b.p - a.p);
+    if(!scores.length) return;
+
+    const row = el("div","row-h");
+    const dot = el("span","dot"); dot.style.background = scores[0].m.color;
+    row.appendChild(dot);
+
+    const txt = el("div","txt");
+    txt.appendChild(el("b", null, scores[0].m.name));
+    txt.appendChild(document.createTextNode(" ganó " + monthLabel(mk).toLowerCase()));
+    row.appendChild(txt);
+
+    row.appendChild(el("span","delta up", String(scores[0].p)));
+    box.appendChild(row);
+  });
 }
 
 function renderHistory(){
@@ -1129,7 +1390,7 @@ function renderHistory(){
     })),
     ...(State.db.redemptions||[]).filter(r=>r.status!=="rechazado").map(r => ({
       t:r.created_at, kind:"red", id:r.id, member:r.member_id,
-      label:"canjeó «" + r.title + "»", delta:-(r.cost||0)
+      label:"canjeó «" + r.title + "»", delta:-(r.cost||0), red:r
     }))
   ].sort((a,b)=> (b.t||"").localeCompare(a.t||""));
 
@@ -1140,19 +1401,28 @@ function renderHistory(){
   }
 
   events.slice(0, State.histLimit).forEach(e => {
-    const row = el("div","row-h");
+    const rej = !!(e.log && e.log.rejected);
+    const row = el("div","row-h" + (rej ? " rejected" : ""));
 
     const dot = el("span","dot"); dot.style.background = memberColor(e.member);
     row.appendChild(dot);
 
-    const txt = el("div","txt");
-    const b = el("b", null, memberName(e.member));
-    txt.appendChild(b);
-    txt.appendChild(document.createTextNode(" " + (e.kind === "log" ? e.label : e.label)));
-    row.appendChild(txt);
+    const wrap = el("div","txt");
+    const txt = el("span");
+    txt.appendChild(el("b", null, memberName(e.member)));
+    txt.appendChild(document.createTextNode(" " + e.label));
+    wrap.appendChild(txt);
+    row.appendChild(wrap);
 
-    const d = el("span","delta " + (e.delta >= 0 ? "up" : "down"),
-                 (e.delta >= 0 ? "+" : "−") + Math.abs(e.delta));
+    if(rej){
+      const why = el("span","why-h",
+        "Rechazada por " + memberName(e.log.rejected_by) +
+        (e.log.reject_reason ? ": " + e.log.reject_reason : ""));
+      wrap.appendChild(why);
+    }
+
+    const d = el("span","delta " + (rej ? "down" : (e.delta >= 0 ? "up" : "down")),
+                 rej ? "0" : (e.delta >= 0 ? "+" : "−") + Math.abs(e.delta));
     row.appendChild(d);
 
     const tm = el("time", null, ago(e.t)); tm.dateTime = e.t;
@@ -1167,10 +1437,17 @@ function renderHistory(){
     }
 
     if(isParent()){
-      const u = el("button","del","↩");
-      u.title = "Deshacer";
-      u.setAttribute("aria-label","Deshacer");
-      u.onclick = () => undoEvent(e);
+      const u = el("button","del", rej ? "↩" : "✕");
+      if(e.kind === "log"){
+        u.title = rej ? "Devolverle los puntos" : "Rechazar esta tarea";
+        u.setAttribute("aria-label", u.title);
+        u.onclick = () => rej ? restoreLog(e.log) : rejectLog(e.log);
+      }else{
+        u.textContent = "↩";
+        u.title = "Borrar del historial";
+        u.setAttribute("aria-label", u.title);
+        u.onclick = () => undoRedemption(e.red);
+      }
       row.appendChild(u);
     }
     box.appendChild(row);
@@ -1179,15 +1456,74 @@ function renderHistory(){
   $("btn-more-hist").hidden = events.length <= State.histLimit;
 }
 
-function undoEvent(e){
+function rejectLog(l){
   sheet({
-    title:"¿Deshacer esto?",
-    desc:`${memberName(e.member)} ${e.label} (${e.delta >= 0 ? "+" : "−"}${Math.abs(e.delta)} pts). ` +
-         `Se borrará del historial y los puntos vuelven a como estaban.`,
-    submit:"Deshacer",
+    title:"Rechazar esta tarea",
+    desc:`${memberName(l.member_id)} ${l.title}, +${l.points} puntos. ` +
+         `Se queda tachada en el historial, deja de sumar y le avisamos con tu motivo.`,
+    fields:[
+      {key:"reason", label:"Motivo", value:"",
+       placeholder:"Quedaron platos sin recoger",
+       hint:"Lo va a leer tal cual, así que díselo claro."}
+    ],
+    submit:"Rechazar",
+    onSubmit: async v => {
+      if(!v.reason) return "Escribe un motivo, si no no aprende nada";
+      await State.store.update("logs", l.id, {
+        rejected:true, reject_reason:v.reason,
+        rejected_by:State.me.id, rejected_at:now(), seen:false
+      });
+      toast("Tarea rechazada");
+      await refresh();
+    }
+  });
+}
+
+function restoreLog(l){
+  sheet({
+    title:"Devolverle los puntos",
+    desc:`${memberName(l.member_id)} ${l.title}. Volverá a contar sus ${l.points} puntos ` +
+         `y el rechazo desaparece.`,
+    submit:"Devolver",
     onSubmit: async () => {
-      await State.store.remove(e.kind === "log" ? "logs" : "redemptions", e.id);
-      toast("Deshecho");
+      await State.store.update("logs", l.id, {
+        rejected:false, reject_reason:null, rejected_by:null, rejected_at:null, seen:true
+      });
+      toast("Puntos devueltos");
+      await refresh();
+    }
+  });
+}
+
+function rejectRedemption(r){
+  sheet({
+    title:"Rechazar el canje",
+    desc:`${memberName(r.member_id)} pidió «${r.title}» por ${r.cost} puntos. ` +
+         `Si lo rechazas se le devuelven y le avisamos con tu motivo.`,
+    fields:[
+      {key:"reason", label:"Motivo", value:"",
+       placeholder:"Esta semana no puede ser, lo dejamos para la próxima",
+       hint:"Lo va a leer tal cual."}
+    ],
+    submit:"Rechazar",
+    onSubmit: async v => {
+      if(!v.reason) return "Escribe un motivo";
+      await State.store.update("redemptions", r.id,
+        {status:"rechazado", reject_reason:v.reason, seen:false});
+      toast("Canje rechazado, puntos devueltos");
+      await refresh();
+    }
+  });
+}
+
+function undoRedemption(r){
+  sheet({
+    title:"Borrar del historial",
+    desc:`Se borrará «${r.title}» de ${memberName(r.member_id)} y sus ${r.cost} puntos vuelven.`,
+    submit:"Borrar",
+    onSubmit: async () => {
+      await State.store.remove("redemptions", r.id);
+      toast("Borrado");
       await refresh();
     }
   });
@@ -1339,7 +1675,10 @@ function startLogin(m){
   $("pin-hint").textContent = hasPin ? "" : "Apúntalo donde no se te olvide.";
   $("pin-ok").textContent = hasPin ? "Entrar" : "Crear PIN";
   $("pin-skip").hidden = hasPin || m.is_parent;
+  $("pin-confirm-wrap").hidden = hasPin;
   $("pin-field").value = "";
+  $("pin-confirm").value = "";
+  $("pin-field").setAttribute("enterkeyhint", hasPin ? "done" : "next");
 
   $("screen-who").hidden = true;
   $("screen-pin").hidden = false;
@@ -1353,6 +1692,13 @@ async function submitPin(){
     finishLogin(pinTarget);
   }else{
     if(!/^\d{4,6}$/.test(v)) return toast("El PIN son 4 a 6 dígitos");
+    const c = $("pin-confirm").value.trim();
+    if(v !== c){
+      toast("Los dos PIN no coinciden");
+      $("pin-confirm").value = "";
+      $("pin-confirm").focus();
+      return;
+    }
     await State.store.update("members", pinTarget.id, {pin:v});
     pinTarget.pin = v;
     finishLogin(pinTarget);
@@ -1369,11 +1715,15 @@ function finishLogin(m){
 }
 
 $("pin-ok").onclick = submitPin;
-$("pin-field").addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); submitPin(); } });
+$("pin-field").addEventListener("keydown", e => {
+  if(e.key === "Enter"){
+    e.preventDefault();
+    if(pinMode === "create") $("pin-confirm").focus(); else submitPin();
+  }
+});
+$("pin-confirm").addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); submitPin(); } });
 $("pin-skip").onclick = () => finishLogin(pinTarget);
 $("pin-back").onclick = () => showWho();
-
-$("who-add").onclick = () => newPerson(true);
 
 function newPerson(thenLogin){
   sheet({
@@ -1464,13 +1814,6 @@ function openSettings(){
     ? "Padre o madre · puedes configurar tareas, recompensas y puntos"
     : "Miembro de la casa";
 
-  const base = location.origin + location.pathname;
-  $("url-nevera").textContent = base + "?z=nevera";
-  $("url-tareas").textContent = base + "?z=tareas";
-  $("mode-line").textContent = State.store.mode === "supabase"
-    ? "Conectado a Supabase: todos los móviles ven lo mismo en tiempo real."
-    : "Modo local: los datos se guardan sólo en este móvil.";
-
   $("admin-people").hidden = !isParent();
   if(isParent()) renderPeople();
 
@@ -1509,18 +1852,6 @@ document.querySelectorAll("[data-theme-set]").forEach(b => {
   };
 });
 
-$("reset-all").onclick = () => {
-  sheet({
-    title:"Olvidar este móvil",
-    desc:"Cerrará tu sesión aquí y volverá a preguntar quién eres. La lista, las tareas y los puntos de la casa NO se borran.",
-    submit:"Olvidar",
-    onSubmit: () => {
-      try{ localStorage.removeItem(LS_ME); }catch(e){}
-      location.reload();
-    }
-  });
-};
-
 /* ============================================================
    CONTROLES
    ============================================================ */
@@ -1538,8 +1869,10 @@ $("btn-super").onclick = () => {
   render();
 };
 $("btn-clear").onclick = async () => {
-  await State.store.removeWhere("items", i => i.done);
-  toast("Carro vaciado");
+  // respeta el filtro: si ves 3 cosas, se van esas 3 y no otras 20
+  const f = State.filter;
+  await State.store.removeWhere("items", i => i.done && (!f || i.added_by === f));
+  toast(f ? "Vaciado lo de " + memberName(f) : "Carro vaciado");
   await refresh();
 };
 $("btn-zone").onclick = () => {
@@ -1553,6 +1886,13 @@ $("btn-newtask").onclick = () => editTask(null);
 $("btn-newreward").onclick = () => editReward(null);
 $("btn-adjust").onclick = () => adjustPoints(null);
 $("btn-more-hist").onclick = () => { State.histLimit += 25; renderHistory(); };
+$("banner-avisos").onclick = () => {
+  State.zone = "tareas";
+  const u = new URL(location.href);
+  u.searchParams.set("z", "tareas");
+  history.replaceState(null,"",u);
+  render();
+};
 
 /* ============================================================
    ARRANQUE
