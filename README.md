@@ -99,6 +99,11 @@ Añadir gente a la casa también es cosa de padres, desde sus ajustes.
 Quien esté marcado como **padre o madre** (`members.is_parent`) ve, además:
 
 - **+ Nueva** en Tareas y Recompensas, y un ✎ para editarlas o borrarlas.
+- **Asignar una tarea a alguien** (campo *Para quién*). Le sale destacada en
+  *Para ti*, arriba de su lista, y **solo esa persona la puede marcar** — si
+  la pudiera marcar cualquiera, asignarla no significaría nada. Los padres
+  ven las de todos en *Asignadas a otros*; el resto solo ve las suyas y las
+  de la casa.
 - **Ajustar puntos**: sumar o restar puntos a mano con un motivo, que queda
   escrito en el historial. También se llega tocando la tarjeta de alguien en
   el marcador.
@@ -181,6 +186,16 @@ Detalles de implementación:
   entero: la sección *Meses anteriores* saca de ahí quién ganó cada mes.
 - **Puntos calculados, no guardados**: ningún total vive en una columna, así
   que dos móviles escribiendo a la vez no pueden descuadrar el marcador.
+- **Lo de siempre**: una fila de chips encima del campo de texto. Con el campo
+  vacío ofrece lo que más compráis (sacado de vuestro propio historial, no de
+  una lista genérica); según escribes, filtra. Nunca ofrece algo que ya está
+  pendiente. Un toque lo añade con la categoría que tuvo la última vez.
+- **Duplicados**: si intentas añadir algo que ya está pendiente, no mete una
+  segunda línea: te avisa de quién lo pidió y hace parpadear la fila que ya
+  existe. `normalize()` iguala mayúsculas, tildes y signos de puntuación, así
+  que "TOMÁTES", "tomates" y "Tomates." son lo mismo (la ñ se respeta: "año"
+  y "ano" siguen siendo distintos). Volver a pedir algo que ya está **en el
+  carro** sí vale — es que hace falta más.
 - **Categorías automáticas**: `guessCat()` clasifica "tomates" en *Fresco* y
   "fairy" en *Limpieza* con un diccionario de palabras. Amplíalo en
   `KEYWORDS`.
@@ -188,6 +203,11 @@ Detalles de implementación:
   "leche x2" y separa la cantidad del producto.
 - **Modo súper**: agranda los toques, esconde quién añadió qué y quita las
   cabeceras de categoría, para ir tachando con el carro en la mano.
+- **Tres pestañas** en la pantalla de tareas: *Tareas*, *Recompensas* e
+  *Historial*. El ranking y los avisos se quedan fuera, siempre visibles. Las
+  recompensas se miran una vez por semana, así que no merecían sitio fijo; a
+  cambio, la pestaña lleva un globo rojo con los canjes pendientes para que un
+  padre no se los pierda por estar en otra pestaña.
 - **Filtro por quién lo pidió**: chips encima de la lista, con el número de
   cosas de cada uno. Solo aparecen si hay más de una persona con cosas
   pendientes, y se esconden en modo súper (en el súper interesa la lista

@@ -139,12 +139,28 @@
     padding:10px 16px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));
   }
   .addbar .inner{max-width:560px;margin:0 auto;display:flex;gap:8px}
+  .suggest{
+    max-width:560px;margin:0 auto 9px;display:flex;gap:7px;
+    overflow-x:auto;scrollbar-width:none;
+  }
+  .suggest::-webkit-scrollbar{display:none}
+  .sug{
+    flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+    border-radius:999px;padding:6px 13px;font-size:13.5px;font-weight:500;white-space:nowrap;
+  }
+  .sug b{color:var(--accent);font-weight:700;margin-right:4px}
+
+  @keyframes flash{
+    0%,100%{background:transparent}
+    25%,75%{background:var(--gold-soft)}
+  }
+  li.item.flash{animation:flash 1.1s ease}
   .addbar input{
     flex:1;min-width:0;border:1px solid var(--line);background:var(--surface);
     border-radius:11px;padding:11px 13px;font-size:16px;
   }
   .addbar input::placeholder{color:var(--faint)}
-  .addbar button{
+  .addbar .inner button{
     border:0;background:var(--accent);color:#fff;border-radius:11px;
     padding:0 18px;font-weight:700;font-size:15px;
   }
@@ -257,6 +273,30 @@
   .sheet h2{font-size:19px}
   .sheet .row{justify-content:flex-end}
 
+  /* ---------- pestañas ---------- */
+  .tabs{
+    display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--line-soft);
+    border-radius:12px;padding:4px;margin-top:20px;
+  }
+  .tab{
+    flex:1;min-width:0;border:0;background:transparent;color:var(--muted);
+    border-radius:9px;padding:8px 6px;font-size:13.5px;font-weight:600;
+    display:flex;align-items:center;justify-content:center;gap:6px;
+  }
+  .tab[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+  .tab .badge{
+    min-width:18px;height:18px;padding:0 5px;border-radius:999px;
+    background:var(--danger);color:#fff;font-size:11px;font-weight:700;
+    display:grid;place-items:center;font-family:var(--font-m);
+  }
+
+  .assigned{
+    display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;
+    padding:1px 7px;border-radius:999px;background:var(--surface-2);color:var(--muted);
+    margin-left:7px;vertical-align:1px;
+  }
+  .task.mine{background:color-mix(in srgb, var(--accent-soft) 45%, transparent)}
+
   /* ---------- filtro por persona ---------- */
   .filters{display:flex;gap:7px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none}
   .filters::-webkit-scrollbar{display:none}
@@ -332,7 +372,8 @@
   .proof-view img{width:100%;border-radius:12px;display:block;background:var(--surface-2)}
 
   .toast{
-    position:fixed;left:50%;transform:translateX(-50%);bottom:calc(74px + env(safe-area-inset-bottom,0px));
+    position:fixed;left:50%;transform:translateX(-50%);
+    bottom:calc(128px + env(safe-area-inset-bottom,0px));
     background:var(--ink);color:var(--ground);padding:9px 15px;border-radius:999px;
     font-size:13.5px;font-weight:600;z-index:90;box-shadow:var(--shadow);
     opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;max-width:88vw;text-align:center;
@@ -461,31 +502,53 @@
     </div>
     <div class="scoreboard" id="scoreboard"></div>
 
-    <div class="section-label" id="label-champions" hidden>Meses anteriores</div>
-    <div class="card hist" id="champions" hidden></div>
-
-    <div class="section-label">Tareas
-      <button class="btn ghost" id="btn-newtask" style="margin-left:auto;flex:none;order:4" hidden>+ Nueva</button>
+    <div class="tabs" role="tablist">
+      <button class="tab" id="tab-tareas" role="tab" data-tab="tareas" aria-selected="true">Tareas</button>
+      <button class="tab" id="tab-premios" role="tab" data-tab="premios" aria-selected="false">Recompensas</button>
+      <button class="tab" id="tab-hist" role="tab" data-tab="hist" aria-selected="false">Historial</button>
     </div>
-    <div class="card" id="list-tasks"></div>
 
-    <div class="section-label">Recompensas
-      <span id="my-balance" class="pill gold" style="margin-left:6px;order:2"></span>
-      <button class="btn ghost" id="btn-newreward" style="margin-left:auto;flex:none;order:4" hidden>+ Nueva</button>
+    <!-- pestaña TAREAS -->
+    <div id="pane-tareas">
+      <div class="section-label" id="label-mine" hidden>Para ti</div>
+      <div class="card" id="list-mine" hidden></div>
+
+      <div class="section-label">De la casa
+        <button class="btn ghost" id="btn-newtask" style="margin-left:auto;flex:none;order:4" hidden>+ Nueva</button>
+      </div>
+      <div class="card" id="list-tasks"></div>
+
+      <div class="section-label" id="label-others" hidden>Asignadas a otros</div>
+      <div class="card" id="list-others" hidden></div>
     </div>
-    <div class="card" id="list-rewards"></div>
 
-    <div class="section-label">Canjes pendientes</div>
-    <div class="card" id="list-redemptions"></div>
+    <!-- pestaña RECOMPENSAS -->
+    <div id="pane-premios" hidden>
+      <div class="section-label">Recompensas
+        <span id="my-balance" class="pill gold" style="margin-left:6px;order:2"></span>
+        <button class="btn ghost" id="btn-newreward" style="margin-left:auto;flex:none;order:4" hidden>+ Nueva</button>
+      </div>
+      <div class="card" id="list-rewards"></div>
 
-    <div class="section-label">Historial
-      <button class="btn ghost" id="btn-more-hist" style="margin-left:auto;flex:none;order:4">Ver más</button>
+      <div class="section-label">Canjes pendientes</div>
+      <div class="card" id="list-redemptions"></div>
     </div>
-    <div class="card hist" id="history"></div>
+
+    <!-- pestaña HISTORIAL -->
+    <div id="pane-hist" hidden>
+      <div class="section-label" id="label-champions" hidden>Meses anteriores</div>
+      <div class="card hist" id="champions" hidden></div>
+
+      <div class="section-label">Todo lo que ha pasado
+        <button class="btn ghost" id="btn-more-hist" style="margin-left:auto;flex:none;order:4">Ver más</button>
+      </div>
+      <div class="card hist" id="history"></div>
+    </div>
   </section>
 </div>
 
 <div class="addbar" id="addbar">
+  <div class="suggest" id="suggest" hidden></div>
   <div class="inner">
     <input id="add-input" placeholder="Añadir a la lista…" autocomplete="off" enterkeyhint="done">
     <button id="add-btn">Añadir</button>
@@ -520,6 +583,20 @@ const KEYWORDS = {
   Limpieza:["fairy","lejia","lejía","detergente","suavizante","bayeta","estropajo","bolsa de basura","basura","friegasuelos","limpiacristales","lavavajillas","servilleta","papel de cocina","papel cocina","film","aluminio"],
   Higiene:["papel higienico","papel higiénico","champu","champú","gel","pasta de dientes","dentifrico","dentífrico","desodorante","cuchilla","compresa","tampon","tampón","jabon","jabón","crema"]
 };
+
+/* "Leche", "LECHÉ" y "leche." son la misma cosa a la hora de sugerir y de
+   detectar que ya está en la lista. Quitamos mayúsculas, tildes y signos.
+   La ñ se respeta: "año" y "ano" no son lo mismo. */
+function normalize(s){
+  return (s || "")
+    .toLowerCase()
+    .replace(/ñ/g, "\u0001")                       // la salvamos del paso siguiente
+    .normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/\u0001/g, "ñ")
+    .replace(/[.,;:!¡?¿'"`´()\[\]{}<>«»…_*+\/\\|@#%&~^-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
 function guessCat(name){
   const n = name.toLowerCase();
@@ -664,7 +741,7 @@ const SupaStore = {
    ============================================================ */
 const State = {
   store:null, db:null, me:null, zone:"nevera",
-  superMode:false, histLimit:12, filter:null
+  superMode:false, histLimit:12, filter:null, tab:"tareas"
 };
 
 function $(id){ return document.getElementById(id); }
@@ -1031,6 +1108,7 @@ function renderNevera(){
   const allPending = items.filter(i => !i.done);
 
   renderFilters(allPending);
+  renderSuggest();
 
   // el filtro solo esconde; no borra ni cambia nada de la lista
   const keep = i => !State.filter || i.added_by === State.filter;
@@ -1078,6 +1156,60 @@ function renderNevera(){
   }
 }
 
+/* Todo lo que la casa ha comprado alguna vez, agrupado. El nombre y la
+   categoría que se quedan son los de la última vez, para que una corrección
+   ("Leche desnatada") mande sobre la primera versión. */
+function knownItems(){
+  const map = new Map();
+  (State.db.items || []).forEach(i => {
+    const k = normalize(i.name);
+    if(!k) return;
+    const prev = map.get(k);
+    if(!prev){
+      map.set(k, {key:k, name:i.name, category:i.category, n:1, last:i.created_at || ""});
+    }else{
+      prev.n++;
+      if((i.created_at || "") > prev.last){
+        prev.last = i.created_at || "";
+        prev.name = i.name;
+        prev.category = i.category;
+      }
+    }
+  });
+  return [...map.values()];
+}
+
+/* Una sola fila, dos comportamientos: con el campo vacío enseña lo que más
+   compráis; según escribes, filtra. Nunca ofrece algo que ya está pendiente. */
+function renderSuggest(){
+  const bar = $("suggest");
+  if(State.superMode){ bar.hidden = true; return; }
+
+  const q = normalize($("add-input").value);
+  const pendientes = new Set((State.db.items || [])
+    .filter(i => !i.done).map(i => normalize(i.name)));
+
+  let list = knownItems().filter(k => !pendientes.has(k.key));
+  if(q) list = list.filter(k => k.key.includes(q) && k.key !== q);
+  list.sort((a,b) => b.n - a.n || b.last.localeCompare(a.last));
+  list = list.slice(0, q ? 6 : 8);
+
+  bar.hidden = !list.length;
+  bar.textContent = "";
+  list.forEach(k => {
+    const b = el("button","sug");
+    b.type = "button";
+    b.appendChild(el("b", null, "+"));
+    b.appendChild(document.createTextNode(k.name));
+    b.onclick = async () => {
+      $("add-input").value = "";
+      await addItem(k.name, k.category);
+      $("add-input").focus();
+    };
+    bar.appendChild(b);
+  });
+}
+
 /* Chips de "quién lo pidió". Solo aparecen cuando hay más de una persona
    con cosas pendientes: con una sola, el filtro no filtra nada. */
 function renderFilters(pending){
@@ -1119,8 +1251,18 @@ function renderFilters(pending){
     .forEach(m => bar.appendChild(chip(m.id, m.name, counts.get(m.id))));
 }
 
+function flashItem(id){
+  const li = document.querySelector('li.item[data-id="' + id + '"]');
+  if(!li) return;
+  li.scrollIntoView({block:"center", behavior:"smooth"});
+  li.classList.remove("flash");
+  void li.offsetWidth;          // reinicia la animación si se repite
+  li.classList.add("flash");
+}
+
 function itemRow(i){
   const li = el("li","item" + (i.done ? " done" : ""));
+  li.dataset.id = i.id;
 
   const chk = el("button","check","✓");
   chk.setAttribute("aria-label", i.done ? "Desmarcar " + i.name : "Marcar " + i.name + " como comprado");
@@ -1166,11 +1308,24 @@ async function toggleItem(i){
   await refresh();
 }
 
-async function addItem(raw){
+async function addItem(raw, forceCat){
   if(!raw.trim()) return;
   const {name, qty} = parseEntry(raw);
+
+  // Si ya está pendiente, no metemos una segunda línea: lo enseñamos.
+  // Volver a pedir algo que ya está EN EL CARRO sí vale — es que hace falta más.
+  const dup = (State.db.items || [])
+    .find(i => !i.done && normalize(i.name) === normalize(name));
+  if(dup){
+    if(State.filter && dup.added_by !== State.filter) State.filter = null;
+    render();
+    flashItem(dup.id);
+    toast(dup.name + " ya está en la lista, lo pidió " + memberName(dup.added_by));
+    return;
+  }
+
   const row = {
-    id:uid(), name, qty, category:guessCat(name),
+    id:uid(), name, qty, category: forceCat || guessCat(name),
     added_by:State.me.id, created_at:now(),
     done:false, done_by:null, done_at:null
   };
@@ -1213,43 +1368,30 @@ function renderTareas(){
 
   renderChampions();
 
-  // ---- tareas ----
-  const tb = $("list-tasks"); tb.textContent = "";
+  // ---- tareas: tuyas / de la casa / de otros ----
   const tasks = (State.db.tasks || []).filter(t => t.active !== false);
-  if(!tasks.length){
+  const mine   = tasks.filter(t => t.assigned_to === State.me.id);
+  const common = tasks.filter(t => !t.assigned_to);
+  const others = tasks.filter(t => t.assigned_to && t.assigned_to !== State.me.id);
+
+  $("label-mine").hidden = !mine.length;
+  $("list-mine").hidden  = !mine.length;
+  fillTasks($("list-mine"), mine, true);
+
+  const tb = $("list-tasks");
+  fillTasks(tb, common, false);
+  if(!common.length && !mine.length){
+    tb.textContent = "";
     tb.appendChild(el("div","empty", isParent()
       ? "Todavía no hay tareas. Dale a «+ Nueva» para crear la primera."
       : "Todavía no hay tareas. Que las cree papá o mamá."));
   }
-  tasks.forEach(t => {
-    const row = el("div","task");
-    const main = el("div","task-main");
-    main.appendChild(el("div","task-title", t.title));
-    const last = (State.db.logs||[]).filter(l=>l.task_id===t.id)
-      .sort((a,b)=> (b.created_at||"").localeCompare(a.created_at||""))[0];
-    main.appendChild(el("div","task-sub", last
-      ? `Último: ${memberName(last.member_id)}, ${ago(last.created_at)}`
-      : "Sin hacer todavía"));
-    row.appendChild(main);
-    row.appendChild(el("div","task-pts","+" + t.points));
-    const b = el("button","doit","Hecho");
-    b.onclick = () => completeTask(t);
-    row.appendChild(b);
 
-    const cam = el("button","cambtn","📷");
-    cam.title = "Marcar como hecha con fotos de prueba";
-    cam.setAttribute("aria-label","Marcar " + t.title + " como hecha con fotos de prueba");
-    cam.onclick = () => proofSheet(t);
-    row.appendChild(cam);
-
-    if(isParent()){
-      const e = el("button","editbtn","✎");
-      e.setAttribute("aria-label","Editar " + t.title);
-      e.onclick = () => editTask(t);
-      row.appendChild(e);
-    }
-    tb.appendChild(row);
-  });
+  // las tareas de otros solo las ven los padres, para poder gestionarlas
+  const showOthers = isParent() && others.length;
+  $("label-others").hidden = !showOthers;
+  $("list-others").hidden  = !showOthers;
+  if(showOthers) fillTasks($("list-others"), others, false);
 
   // ---- recompensas ----
   const rb = $("list-rewards"); rb.textContent = "";
@@ -1310,6 +1452,77 @@ function renderTareas(){
   });
 
   renderHistory();
+  renderTabs(pend.length);
+}
+
+function renderTabs(canjesPendientes){
+  ["tareas","premios","hist"].forEach(k => {
+    const t = $("tab-" + (k === "hist" ? "hist" : k));
+    t.setAttribute("aria-selected", String(State.tab === k));
+    $("pane-" + k).hidden = State.tab !== k;
+  });
+
+  // los padres tienen que enterarse de un canje pendiente aunque no
+  // estén mirando esa pestaña
+  const tab = $("tab-premios");
+  const old = tab.querySelector(".badge");
+  if(old) old.remove();
+  if(isParent() && canjesPendientes > 0){
+    tab.appendChild(el("span","badge", String(canjesPendientes)));
+  }
+}
+
+/* Una tarea asignada solo la puede marcar su dueño. Si cualquiera pudiera
+   marcarla, asignarla no significaría nada. */
+function fillTasks(box, list, isMine){
+  box.textContent = "";
+  if(!list.length) return;
+
+  list.forEach(t => {
+    const row = el("div","task" + (isMine ? " mine" : ""));
+
+    const main = el("div","task-main");
+    const title = el("div","task-title");
+    title.appendChild(document.createTextNode(t.title));
+    if(t.assigned_to && !isMine){
+      const chip = el("span","assigned");
+      const dot = el("span","dot"); dot.style.background = memberColor(t.assigned_to);
+      chip.appendChild(dot);
+      chip.appendChild(document.createTextNode(memberName(t.assigned_to)));
+      title.appendChild(chip);
+    }
+    main.appendChild(title);
+
+    const last = validLogs().filter(l=>l.task_id===t.id)
+      .sort((a,b)=> (b.created_at||"").localeCompare(a.created_at||""))[0];
+    main.appendChild(el("div","task-sub", last
+      ? `Último: ${memberName(last.member_id)}, ${ago(last.created_at)}`
+      : (isMine ? "Te toca a ti" : "Sin hacer todavía")));
+    row.appendChild(main);
+
+    row.appendChild(el("div","task-pts","+" + t.points));
+
+    const puedo = !t.assigned_to || t.assigned_to === State.me.id;
+    if(puedo){
+      const b = el("button","doit","Hecho");
+      b.onclick = () => completeTask(t);
+      row.appendChild(b);
+
+      const cam = el("button","cambtn","📷");
+      cam.title = "Marcar como hecha con fotos de prueba";
+      cam.setAttribute("aria-label","Marcar " + t.title + " como hecha con fotos de prueba");
+      cam.onclick = () => proofSheet(t);
+      row.appendChild(cam);
+    }
+
+    if(isParent()){
+      const e = el("button","editbtn","✎");
+      e.setAttribute("aria-label","Editar " + t.title);
+      e.onclick = () => editTask(t);
+      row.appendChild(e);
+    }
+    box.appendChild(row);
+  });
 }
 
 function renderAvisos(){
@@ -1554,12 +1767,17 @@ async function redeem(r){
 
 /* ---------- administración (solo padres) ---------- */
 function editTask(t){
+  const quien = [{value:"", label:"Cualquiera de la casa"}]
+    .concat((State.db.members||[]).map(m => ({value:m.id, label:"Solo " + m.name})));
   sheet({
     title: t ? "Editar tarea" : "Nueva tarea",
     fields:[
       {key:"title", label:"Tarea", value:t ? t.title : "", placeholder:"Sacar la basura"},
       {key:"points", label:"Puntos", type:"number", value:t ? t.points : 10,
-       hint:"Lo que suma cada vez que alguien la marca como hecha."}
+       hint:"Lo que suma cada vez que alguien la marca como hecha."},
+      {key:"who", label:"Para quién", type:"select", options:quien,
+       value: t ? (t.assigned_to || "") : "",
+       hint:"Si eliges a alguien, le sale destacada y solo la puede marcar esa persona."}
     ],
     submit: t ? "Guardar" : "Crear",
     danger: t ? {label:"Borrar", onClick: async () => {
@@ -1569,12 +1787,14 @@ function editTask(t){
       if(!v.title) return "Ponle un nombre a la tarea";
       const pts = parseInt(v.points, 10);
       if(!pts || pts < 1) return "Los puntos tienen que ser un número mayor que 0";
+      const who = v.who || null;
       if(t){
-        await State.store.update("tasks", t.id, {title:v.title, points:pts});
+        await State.store.update("tasks", t.id, {title:v.title, points:pts, assigned_to:who});
         toast("Tarea actualizada");
       }else{
-        await State.store.insert("tasks", {id:uid(), title:v.title, points:pts, active:true, created_at:now()});
-        toast("Tarea creada");
+        await State.store.insert("tasks", {id:uid(), title:v.title, points:pts,
+                                           assigned_to:who, active:true, created_at:now()});
+        toast(who ? "Tarea asignada a " + memberName(who) : "Tarea creada");
       }
       await refresh();
     }
@@ -1862,6 +2082,7 @@ $("add-btn").onclick = () => {
 $("add-input").addEventListener("keydown", e => {
   if(e.key === "Enter"){ e.preventDefault(); $("add-btn").click(); }
 });
+$("add-input").addEventListener("input", renderSuggest);
 $("btn-super").onclick = () => {
   State.superMode = !State.superMode;
   document.body.classList.toggle("supermode", State.superMode);
@@ -1886,6 +2107,9 @@ $("btn-newtask").onclick = () => editTask(null);
 $("btn-newreward").onclick = () => editReward(null);
 $("btn-adjust").onclick = () => adjustPoints(null);
 $("btn-more-hist").onclick = () => { State.histLimit += 25; renderHistory(); };
+document.querySelectorAll(".tab").forEach(t => {
+  t.onclick = () => { State.tab = t.dataset.tab; render(); };
+});
 $("banner-avisos").onclick = () => {
   State.zone = "tareas";
   const u = new URL(location.href);
