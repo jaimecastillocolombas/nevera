@@ -36,7 +36,9 @@
     --gold:#B4690E;
     --gold-soft:#FBEBD2;
     --danger:#A32F2F;
+    --danger-soft:#F7E3E3;
     --shadow:0 1px 2px rgba(21,32,28,.06), 0 8px 24px -16px rgba(21,32,28,.28);
+    --shadow-lg:0 24px 60px -20px rgba(21,32,28,.35);
     --radius:14px;
     --font-d:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
     --font-b:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -44,37 +46,25 @@
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --ground:#111614;
-      --surface:#1A201D;
-      --surface-2:#212825;
-      --line:#303935;
-      --line-soft:#272F2C;
-      --ink:#E9EFEC;
-      --muted:#9AA8A2;
-      --faint:#75837C;
-      --accent:#41C295;
-      --accent-soft:#12312659;
-      --gold:#E7A948;
-      --gold-soft:#3A2C1259;
-      --danger:#E58A8A;
+      --ground:#111614; --surface:#1A201D; --surface-2:#212825;
+      --line:#303935; --line-soft:#272F2C; --ink:#E9EFEC;
+      --muted:#9AA8A2; --faint:#75837C;
+      --accent:#41C295; --accent-soft:#12312659;
+      --gold:#E7A948; --gold-soft:#3A2C1259;
+      --danger:#E58A8A; --danger-soft:#3A1E1E59;
       --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+      --shadow-lg:0 24px 60px -20px rgba(0,0,0,.9);
     }
   }
   :root[data-theme="dark"]{
-    --ground:#111614;
-    --surface:#1A201D;
-    --surface-2:#212825;
-    --line:#303935;
-    --line-soft:#272F2C;
-    --ink:#E9EFEC;
-    --muted:#9AA8A2;
-    --faint:#75837C;
-    --accent:#41C295;
-    --accent-soft:#12312659;
-    --gold:#E7A948;
-    --gold-soft:#3A2C1259;
-    --danger:#E58A8A;
+    --ground:#111614; --surface:#1A201D; --surface-2:#212825;
+    --line:#303935; --line-soft:#272F2C; --ink:#E9EFEC;
+    --muted:#9AA8A2; --faint:#75837C;
+    --accent:#41C295; --accent-soft:#12312659;
+    --gold:#E7A948; --gold-soft:#3A2C1259;
+    --danger:#E58A8A; --danger-soft:#3A1E1E59;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.8);
+    --shadow-lg:0 24px 60px -20px rgba(0,0,0,.9);
   }
 
   *{box-sizing:border-box}
@@ -104,7 +94,11 @@
     color:var(--faint);letter-spacing:.09em;text-transform:uppercase}
   .avatar{
     width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;
-    font-family:var(--font-d);font-weight:700;font-size:14px;color:#fff;border:0;
+    font-family:var(--font-d);font-weight:700;font-size:14px;color:#fff;border:0;position:relative;
+  }
+  .avatar.parent::after{
+    content:"";position:absolute;right:-1px;bottom:-1px;width:11px;height:11px;border-radius:50%;
+    background:var(--gold);border:2px solid var(--ground);
   }
   .iconbtn{
     width:34px;height:34px;flex:none;border-radius:10px;border:1px solid var(--line);
@@ -117,7 +111,7 @@
     font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);
     font-weight:600;margin:22px 0 8px;display:flex;align-items:center;gap:8px;
   }
-  .section-label::after{content:"";flex:1;height:1px;background:var(--line-soft)}
+  .section-label::after{content:"";flex:1;height:1px;background:var(--line-soft);order:5}
   .num{font-family:var(--font-m);font-variant-numeric:tabular-nums}
   .pill{
     display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;
@@ -132,9 +126,9 @@
   }
   .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
   .btn.ghost{background:transparent;border-color:transparent;color:var(--muted);padding:6px 8px;font-size:13px}
+  .btn.warn{color:var(--danger);border-color:var(--danger);background:transparent}
   .btn:disabled{opacity:.45;cursor:not-allowed}
   .empty{color:var(--faint);font-size:13.5px;padding:18px 4px;text-align:center}
-  .hidden{display:none!important}
 
   /* ---------- add bar ---------- */
   .addbar{
@@ -176,9 +170,8 @@
   .dot{width:7px;height:7px;border-radius:50%;flex:none}
   .qty{font-family:var(--font-m);font-size:12px;color:var(--muted);background:var(--surface-2);
     border-radius:6px;padding:1px 6px;flex:none}
-  .del{border:0;background:transparent;color:var(--faint);font-size:15px;padding:2px 4px;line-height:1}
+  .del{border:0;background:transparent;color:var(--faint);font-size:15px;padding:2px 5px;line-height:1}
 
-  /* supermarket mode */
   body.supermode li.item{padding:15px 13px}
   body.supermode .check{width:28px;height:28px}
   body.supermode .item-name{font-size:17px}
@@ -189,34 +182,43 @@
   .scoreboard::-webkit-scrollbar{display:none}
   .score{
     flex:none;min-width:96px;background:var(--surface);border:1px solid var(--line-soft);
-    border-radius:var(--radius);padding:11px 12px;box-shadow:var(--shadow);
+    border-radius:var(--radius);padding:11px 12px;box-shadow:var(--shadow);text-align:left;
   }
   .score .nm{font-size:12px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:5px}
   .score .pts{font-family:var(--font-m);font-weight:600;font-size:25px;letter-spacing:-.02em;margin-top:3px}
   .score .pts span{font-family:var(--font-b);font-size:11px;color:var(--faint);font-weight:500;margin-left:3px}
   .score.leader{border-color:var(--gold);background:var(--gold-soft)}
+  button.score{cursor:pointer}
 
-  .task{display:flex;align-items:center;gap:11px;padding:12px 13px;border-bottom:1px solid var(--line-soft)}
+  .task{display:flex;align-items:center;gap:10px;padding:12px 13px;border-bottom:1px solid var(--line-soft)}
   .task:last-child{border-bottom:0}
   .task-main{flex:1;min-width:0}
-  .task-title{font-weight:500}
+  .task-title{font-weight:500;overflow-wrap:anywhere}
   .task-sub{font-size:11.5px;color:var(--faint);margin-top:2px}
   .task-pts{font-family:var(--font-m);font-weight:600;color:var(--gold);font-size:14px;flex:none}
   .doit{border:1px solid var(--accent);color:var(--accent);background:transparent;
     border-radius:9px;padding:6px 12px;font-weight:700;font-size:13px;flex:none}
+  .editbtn{border:0;background:transparent;color:var(--faint);font-size:14px;padding:3px 4px;line-height:1;flex:none}
 
-  .reward{display:flex;align-items:center;gap:11px;padding:12px 13px;border-bottom:1px solid var(--line-soft)}
+  .reward{display:flex;align-items:center;gap:10px;padding:12px 13px;border-bottom:1px solid var(--line-soft)}
   .reward:last-child{border-bottom:0}
   .bar{height:4px;border-radius:99px;background:var(--line-soft);margin-top:6px;overflow:hidden}
   .bar i{display:block;height:100%;background:var(--gold);border-radius:99px}
 
-  /* ---------- feed ---------- */
-  .feed{font-size:12.5px;color:var(--muted)}
-  .feed div{padding:7px 13px;border-bottom:1px solid var(--line-soft);display:flex;gap:7px}
-  .feed div:last-child{border-bottom:0}
-  .feed time{color:var(--faint);flex:none;font-size:11.5px;margin-left:auto}
+  /* ---------- historial ---------- */
+  .hist div.row-h{
+    padding:9px 13px;border-bottom:1px solid var(--line-soft);
+    display:flex;gap:9px;align-items:center;font-size:13px;
+  }
+  .hist div.row-h:last-child{border-bottom:0}
+  .hist .txt{flex:1;min-width:0;color:var(--muted)}
+  .hist .txt b{color:var(--ink);font-weight:600}
+  .hist .delta{font-family:var(--font-m);font-weight:600;font-size:13px;flex:none}
+  .hist .delta.up{color:var(--accent)}
+  .hist .delta.down{color:var(--danger)}
+  .hist time{color:var(--faint);font-size:11px;flex:none}
 
-  /* ---------- modal / screens ---------- */
+  /* ---------- screens ---------- */
   .screen{
     position:fixed;inset:0;z-index:60;background:var(--ground);
     overflow-y:auto;padding:24px 16px calc(32px + env(safe-area-inset-bottom,0px));
@@ -228,28 +230,66 @@
     display:flex;align-items:center;gap:10px;padding:13px;border-radius:var(--radius);
     border:1px solid var(--line);background:var(--surface);text-align:left;font-weight:600;
   }
+  .who-btn small{display:block;font-weight:500;font-size:11px;color:var(--faint)}
   .field{display:flex;flex-direction:column;gap:5px;margin-top:14px}
   .field label{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:600}
   .field input,.field select{
     border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 12px;font-size:16px;
   }
+  .field .hint{font-size:12px;color:var(--faint)}
   .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
   .lead{color:var(--muted);font-size:14px;margin:6px 0 0}
+  .pinbig{font-family:var(--font-m);font-size:24px;letter-spacing:.5em;text-align:center}
+
+  /* ---------- modal ---------- */
+  .backdrop{
+    position:fixed;inset:0;z-index:70;background:rgba(10,16,14,.45);
+    display:flex;align-items:flex-end;justify-content:center;padding:16px;
+  }
+  @media (min-width:540px){.backdrop{align-items:center}}
+  .sheet{
+    width:100%;max-width:440px;background:var(--surface);border-radius:18px;
+    box-shadow:var(--shadow-lg);padding:20px;max-height:86vh;overflow-y:auto;
+  }
+  .sheet h2{font-size:19px}
+  .sheet .row{justify-content:flex-end}
+
+  /* ---------- pruebas con foto ---------- */
+  .proof-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .slot label{
+    font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);
+    font-weight:600;display:block;margin-bottom:5px;
+  }
+  .drop{
+    position:relative;aspect-ratio:3/4;max-width:100%;border-radius:12px;
+    border:1.5px dashed var(--line);background:var(--surface-2);
+    display:grid;place-items:center;overflow:hidden;cursor:pointer;
+    color:var(--faint);font-size:12.5px;text-align:center;padding:8px;
+  }
+  .drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .drop input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .drop.filled{border-style:solid;border-color:var(--accent)}
+  .cambtn{
+    border:1px solid var(--line);background:transparent;color:var(--faint);
+    border-radius:9px;padding:5px 8px;font-size:13px;line-height:1;flex:none;
+  }
+  .cambtn.has{border-color:var(--accent);color:var(--accent)}
+  .proof-view{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+  .proof-view figure{margin:0}
+  .proof-view figcaption{
+    font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);
+    font-weight:600;margin-bottom:5px;
+  }
+  .proof-view img{width:100%;border-radius:12px;display:block;background:var(--surface-2)}
 
   .toast{
     position:fixed;left:50%;transform:translateX(-50%);bottom:calc(74px + env(safe-area-inset-bottom,0px));
     background:var(--ink);color:var(--ground);padding:9px 15px;border-radius:999px;
-    font-size:13.5px;font-weight:600;z-index:80;box-shadow:var(--shadow);
-    opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;
+    font-size:13.5px;font-weight:600;z-index:90;box-shadow:var(--shadow);
+    opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;max-width:88vw;text-align:center;
   }
   .toast.on{opacity:1;transform:translateX(-50%) translateY(-4px)}
   @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
-
-  .banner{
-    font-size:12px;color:var(--muted);background:var(--surface-2);border:1px dashed var(--line);
-    border-radius:10px;padding:8px 11px;margin-top:12px;
-  }
-  .banner b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -266,6 +306,25 @@
   </div>
 </div>
 
+<!-- ======================= PIN ======================= -->
+<div class="screen" id="screen-pin" hidden>
+  <div class="inner">
+    <h1 style="font-size:26px" id="pin-title">Hola</h1>
+    <p class="lead" id="pin-lead">Escribe tu PIN.</p>
+    <div class="field">
+      <label for="pin-field">PIN</label>
+      <input id="pin-field" class="pinbig" type="tel" inputmode="numeric" maxlength="6"
+             autocomplete="off" enterkeyhint="done" placeholder="····">
+      <span class="hint" id="pin-hint"></span>
+    </div>
+    <div class="row">
+      <button class="btn primary" id="pin-ok">Entrar</button>
+      <button class="btn ghost" id="pin-skip" hidden>Entrar sin PIN</button>
+      <button class="btn ghost" id="pin-back">Volver</button>
+    </div>
+  </div>
+</div>
+
 <!-- ======================= AJUSTES ======================= -->
 <div class="screen" id="screen-settings" hidden>
   <div class="inner">
@@ -278,10 +337,23 @@
     <div class="card" style="padding:13px">
       <div style="display:flex;align-items:center;gap:10px">
         <div class="avatar" id="set-avatar" style="background:#888"></div>
-        <div style="flex:1"><div style="font-weight:600" id="set-name">—</div>
-          <div style="font-size:12px;color:var(--faint)" id="set-role">—</div></div>
-        <button class="btn" id="set-change">Cambiar</button>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600" id="set-name">—</div>
+          <div style="font-size:12px;color:var(--faint)" id="set-role">—</div>
+        </div>
       </div>
+      <div class="row">
+        <button class="btn" id="set-change">Cambiar de persona</button>
+        <button class="btn ghost" id="set-pin">Cambiar mi PIN</button>
+      </div>
+    </div>
+
+    <div id="admin-people" hidden>
+      <div class="section-label">Personas de la casa
+        <button class="btn ghost" id="btn-newperson" style="margin-left:auto;flex:none;order:4">+ Añadir</button>
+      </div>
+      <div class="card" id="list-people"></div>
+      <p class="lead" style="font-size:12.5px">Solo quien sea padre o madre puede crear tareas, poner recompensas y ajustar puntos.</p>
     </div>
 
     <div class="section-label">Tema</div>
@@ -300,30 +372,11 @@
       </div>
     </div>
 
-    <div class="section-label">Modo padres</div>
-    <div class="card" style="padding:13px">
-      <div id="parent-locked">
-        <div style="font-size:13.5px;color:var(--muted)">Para crear tareas, recompensas y aprobar canjes.</div>
-        <div class="field"><label for="pin-input">PIN</label>
-          <input id="pin-input" type="tel" inputmode="numeric" maxlength="6" placeholder="••••"></div>
-        <div class="row"><button class="btn primary" id="pin-go">Entrar</button></div>
-      </div>
-      <div id="parent-open" hidden>
-        <div class="pill acc">Modo padres activo</div>
-        <div class="field"><label for="pin-new">Cambiar PIN</label>
-          <input id="pin-new" type="tel" inputmode="numeric" maxlength="6" placeholder="Nuevo PIN"></div>
-        <div class="row">
-          <button class="btn" id="pin-save">Guardar PIN</button>
-          <button class="btn ghost" id="pin-out">Salir del modo padres</button>
-        </div>
-      </div>
-    </div>
-
     <div class="section-label">Datos</div>
     <div class="card" style="padding:13px">
       <div style="font-size:13.5px;color:var(--muted)" id="mode-line">—</div>
       <div class="row">
-        <button class="btn ghost" id="reset-all" style="color:var(--danger)">Borrar todo y empezar de cero</button>
+        <button class="btn ghost" id="reset-all" style="color:var(--danger)">Olvidar este móvil</button>
       </div>
     </div>
   </div>
@@ -343,37 +396,41 @@
   <section id="view-nevera">
     <div class="section-label" style="margin-top:16px">
       <span id="pend-count">Por comprar</span>
-      <button class="btn ghost" id="btn-super" style="margin-left:auto;flex:none">Modo súper</button>
+      <button class="btn ghost" id="btn-super" style="margin-left:auto;flex:none;order:4">Modo súper</button>
     </div>
     <div class="card" id="list-pending"></div>
 
     <div class="section-label" id="label-done">
       En el carro
-      <button class="btn ghost" id="btn-clear" style="margin-left:auto;flex:none">Vaciar</button>
+      <button class="btn ghost" id="btn-clear" style="margin-left:auto;flex:none;order:4">Vaciar</button>
     </div>
     <div class="card" id="list-done"></div>
   </section>
 
   <!-- ---- TAREAS ---- -->
   <section id="view-tareas" hidden>
-    <div class="section-label" style="margin-top:16px">Puntos de la casa</div>
+    <div class="section-label" style="margin-top:16px">Puntos de la casa
+      <button class="btn ghost" id="btn-adjust" style="margin-left:auto;flex:none;order:4" hidden>Ajustar puntos</button>
+    </div>
     <div class="scoreboard" id="scoreboard"></div>
 
     <div class="section-label">Tareas
-      <button class="btn ghost" id="btn-newtask" style="margin-left:auto;flex:none" hidden>+ Nueva</button>
+      <button class="btn ghost" id="btn-newtask" style="margin-left:auto;flex:none;order:4" hidden>+ Nueva</button>
     </div>
     <div class="card" id="list-tasks"></div>
 
     <div class="section-label">Recompensas
-      <button class="btn ghost" id="btn-newreward" style="margin-left:auto;flex:none" hidden>+ Nueva</button>
+      <button class="btn ghost" id="btn-newreward" style="margin-left:auto;flex:none;order:4" hidden>+ Nueva</button>
     </div>
     <div class="card" id="list-rewards"></div>
 
     <div class="section-label">Canjes pendientes</div>
     <div class="card" id="list-redemptions"></div>
 
-    <div class="section-label">Últimos movimientos</div>
-    <div class="card feed" id="feed"></div>
+    <div class="section-label">Historial
+      <button class="btn ghost" id="btn-more-hist" style="margin-left:auto;flex:none;order:4">Ver más</button>
+    </div>
+    <div class="card hist" id="history"></div>
   </section>
 </div>
 
@@ -392,15 +449,9 @@
    Backend: Supabase si hay config; si no, modo local (este móvil).
    ============================================================ */
 
-/* ---------- configuración de Supabase ----------
-   Rellena estas dos constantes tras crear el proyecto en supabase.com.
-   Si las dejas vacías, la app funciona en modo local (sin sincronizar). */
+/* ---------- configuración de Supabase ---------- */
 const SUPABASE_URL = "https://kguazkofchalesbgubku.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtndWF6a29mY2hhbGVzYmd1Ymt1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwODE1NzYsImV4cCI6MjEwNTY1NzU3Nn0.TYTxPZLNib6qldEkCAlCsy5xnS6sLEBGJGRDZFjY1vI";
-/* Clave publishable de este proyecto, para cuando Supabase retire las
-   legacy (finales de 2026). Al cambiarla, sube tambien la version de
-   supabase-js en SupaStore.init() a 2.58.0 o superior:
-   sb_publishable_xyetROohDAOGVrxylmAJMg_dORXp2Yg                        */
 /* ------------------------------------------------ */
 
 const LS_DB = "casa.db.v1";
@@ -412,7 +463,7 @@ const CATS = ["Fresco","Nevera","Despensa","Congelado","Bebidas","Limpieza","Hig
 const KEYWORDS = {
   Fresco:["tomate","lechuga","manzana","platano","plátano","naranja","pan","fruta","verdura","cebolla","patata","pimiento","pollo","ternera","cerdo","pescado","merluza","salmon","salmón","carne","huevo","huevos","aguacate","limon","limón","zanahoria","calabacin","calabacín","brocoli","brócoli","champiñon","champiñón","fresa","uva","pera","melon","melón","sandia","sandía"],
   Nevera:["leche","yogur","queso","mantequilla","nata","jamon","jamón","chorizo","embutido","hummus","tofu"],
-  Despensa:["arroz","pasta","macarrones","espagueti","aceite","sal","azucar","azúcar","harina","atun","atún","garbanzo","lenteja","cafe","café","te","galleta","cereal","tomate frito","caldo","vinagre","especia","miel","mermelada","chocolate","nutella","frutos secos","almendra"],
+  Despensa:["arroz","pasta","macarrones","espagueti","aceite","sal","azucar","azúcar","harina","atun","atún","garbanzo","lenteja","cafe","café","galleta","cereal","tomate frito","caldo","vinagre","especia","miel","mermelada","chocolate","nutella","frutos secos","almendra"],
   Congelado:["congelado","helado","guisante","pizza","nugget","varitas"],
   Bebidas:["agua","zumo","cerveza","vino","refresco","coca","fanta","aquarius","bebida","tonica","tónica","limonada"],
   Limpieza:["fairy","lejia","lejía","detergente","suavizante","bayeta","estropajo","bolsa de basura","basura","friegasuelos","limpiacristales","lavavajillas","servilleta","papel de cocina","papel cocina","film","aluminio"],
@@ -427,7 +478,6 @@ function guessCat(name){
   return "Otros";
 }
 
-/* Extrae cantidad del texto: "6 huevos", "leche x2", "2kg patatas" */
 function parseEntry(raw){
   let text = raw.trim().replace(/\s+/g," ");
   let qty = "";
@@ -464,9 +514,9 @@ function seed(){
   const t = now();
   return {
     members:[
-      {id:uid(), name:"Jaime",  color:COLORS[0], is_parent:false, created_at:t},
-      {id:uid(), name:"Mamá",   color:COLORS[2], is_parent:true,  created_at:t},
-      {id:uid(), name:"Papá",   color:COLORS[1], is_parent:true,  created_at:t}
+      {id:uid(), name:"Jaime",  color:COLORS[0], is_parent:false, pin:null, created_at:t},
+      {id:uid(), name:"Mamá",   color:COLORS[2], is_parent:true,  pin:null, created_at:t},
+      {id:uid(), name:"Papá",   color:COLORS[1], is_parent:true,  pin:null, created_at:t}
     ],
     items:[],
     tasks:[
@@ -489,7 +539,6 @@ function seed(){
   };
 }
 
-/* ---- backend local ---- */
 const LocalStore = {
   mode:"local",
   _read(){
@@ -517,14 +566,12 @@ const LocalStore = {
   async removeWhere(table,fn){
     const db=this._read(); db[table]=db[table].filter(x=>!fn(x)); this._write(db);
   },
-  async wipe(){ try{ localStorage.removeItem(LS_DB); }catch(e){} },
   onChange(cb){
     window.addEventListener("storage", e => { if(e.key === LS_DB) cb(); });
     try{ this._chan = new BroadcastChannel("casa"); this._chan.onmessage = () => cb(); }catch(e){}
   }
 };
 
-/* ---- backend Supabase ---- */
 const SupaStore = {
   mode:"supabase", client:null,
   async init(){
@@ -551,10 +598,9 @@ const SupaStore = {
   async update(table,id,patch){ await this.client.from(table).update(patch).eq("id",id); },
   async remove(table,id){ await this.client.from(table).delete().eq("id",id); },
   async removeWhere(table,fn){
-    const rows = (State.db[table] || []).filter(fn).map(r=>r.id);
-    if(rows.length) await this.client.from(table).delete().in("id",rows);
+    const ids = (State.db[table] || []).filter(fn).map(r=>r.id);
+    if(ids.length) await this.client.from(table).delete().in("id",ids);
   },
-  async wipe(){},
   onChange(cb){
     this.client.channel("casa-all")
       .on("postgres_changes", {event:"*", schema:"public"}, () => cb())
@@ -567,7 +613,7 @@ const SupaStore = {
    ============================================================ */
 const State = {
   store:null, db:null, me:null, zone:"nevera",
-  superMode:false, parentMode:false
+  superMode:false, histLimit:12
 };
 
 function $(id){ return document.getElementById(id); }
@@ -576,12 +622,13 @@ function el(tag, cls, txt){ const e=document.createElement(tag); if(cls) e.class
 let toastTimer;
 function toast(msg){
   const t = $("toast"); t.textContent = msg; t.classList.add("on");
-  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove("on"), 1800);
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove("on"), 2200);
 }
 
 function member(id){ return (State.db.members || []).find(m => m.id === id); }
 function memberName(id){ const m = member(id); return m ? m.name : "Alguien"; }
 function memberColor(id){ const m = member(id); return m ? m.color : "#888"; }
+function isParent(){ return !!(State.me && State.me.is_parent); }
 
 function pointsOf(memberId){
   const earned = (State.db.logs||[]).filter(l=>l.member_id===memberId).reduce((a,l)=>a+(l.points||0),0);
@@ -591,10 +638,240 @@ function pointsOf(memberId){
 }
 
 /* ============================================================
+   MODAL REUTILIZABLE
+   ============================================================ */
+function sheet({title, desc, fields = [], submit = "Guardar", onSubmit, danger}){
+  const back = el("div","backdrop");
+  const box = el("div","sheet");
+  const form = document.createElement("form");
+
+  const h = el("h2", null, title); form.appendChild(h);
+  if(desc){ const p = el("p","lead",desc); form.appendChild(p); }
+
+  const inputs = {};
+  const photoFields = [];
+
+  // los campos de foto van juntos en una rejilla de dos columnas
+  const photos = fields.filter(f => f.type === "photo");
+  if(photos.length){
+    const grid = el("div","proof-grid");
+    photos.forEach(f => {
+      const slot = el("div","slot");
+      const lab = el("label", null, f.label); lab.htmlFor = "f_" + f.key;
+      slot.appendChild(lab);
+
+      const drop = el("div","drop");
+      const hint = el("span", null, f.placeholder || "Toca para hacer la foto");
+      drop.appendChild(hint);
+
+      const inp = document.createElement("input");
+      inp.type = "file"; inp.accept = "image/*"; inp.id = "f_" + f.key;
+      inp.setAttribute("capture","environment");
+      drop.appendChild(inp);
+
+      inp.onchange = () => {
+        const file = inp.files && inp.files[0];
+        if(!file) return;
+        const prev = drop.querySelector("img");
+        if(prev) prev.remove();
+        const img = document.createElement("img");
+        img.alt = f.label;
+        img.src = URL.createObjectURL(file);
+        img.onload = () => URL.revokeObjectURL(img.src);
+        drop.appendChild(img);
+        drop.classList.add("filled");
+        hint.hidden = true;
+      };
+
+      slot.appendChild(drop);
+      grid.appendChild(slot);
+      inputs[f.key] = inp;
+      photoFields.push(f.key);
+    });
+    form.appendChild(grid);
+  }
+
+  fields.filter(f => f.type !== "photo").forEach(f => {
+    const wrap = el("div","field");
+    const id = "f_" + f.key;
+    const lab = el("label", null, f.label); lab.htmlFor = id;
+    wrap.appendChild(lab);
+
+    let inp;
+    if(f.type === "select"){
+      inp = document.createElement("select");
+      (f.options || []).forEach(o => {
+        const op = document.createElement("option");
+        op.value = o.value; op.textContent = o.label;
+        if(String(o.value) === String(f.value)) op.selected = true;
+        inp.appendChild(op);
+      });
+    }else{
+      inp = document.createElement("input");
+      inp.type = f.type === "number" ? "text" : (f.type || "text");
+      if(f.type === "number") inp.inputMode = "numeric";
+      inp.value = f.value != null ? f.value : "";
+      if(f.placeholder) inp.placeholder = f.placeholder;
+      if(f.maxlength) inp.maxLength = f.maxlength;
+    }
+    inp.id = id;
+    wrap.appendChild(inp);
+    if(f.hint) wrap.appendChild(el("span","hint",f.hint));
+    inputs[f.key] = inp;
+    form.appendChild(wrap);
+  });
+
+  const row = el("div","row");
+  const cancel = el("button","btn ghost","Cancelar");
+  cancel.type = "button";
+  cancel.onclick = () => back.remove();
+  row.appendChild(cancel);
+
+  if(danger){
+    const d = el("button","btn warn", danger.label);
+    d.type = "button";
+    d.onclick = async () => { back.remove(); await danger.onClick(); };
+    row.appendChild(d);
+  }
+
+  const ok = el("button","btn primary", submit);
+  ok.type = "submit";
+  row.appendChild(ok);
+  form.appendChild(row);
+
+  form.onsubmit = async e => {
+    e.preventDefault();
+    const values = {};
+    Object.entries(inputs).forEach(([k,i]) => {
+      values[k] = photoFields.includes(k) ? (i.files && i.files[0]) || null : i.value.trim();
+    });
+    const label = ok.textContent;
+    ok.disabled = true; cancel.disabled = true;
+    if(photoFields.some(k => values[k])) ok.textContent = "Subiendo…";
+    let err;
+    try{ err = await onSubmit(values); }
+    catch(ex){ err = "No se ha podido guardar. Inténtalo otra vez."; }
+    ok.disabled = false; cancel.disabled = false; ok.textContent = label;
+    if(err) toast(err); else back.remove();
+  };
+
+  back.onclick = e => { if(e.target === back) back.remove(); };
+  document.addEventListener("keydown", function esc(e){
+    if(e.key === "Escape"){ back.remove(); document.removeEventListener("keydown", esc); }
+  });
+
+  box.appendChild(form);
+  back.appendChild(box);
+  document.body.appendChild(back);
+  const first = Object.values(inputs)[0];
+  if(first) setTimeout(()=>first.focus(), 60);
+}
+
+/* ============================================================
+   PRUEBAS CON FOTO
+   ============================================================ */
+/* Una foto de móvil son varios MB. Antes de subirla la reducimos a 900px
+   de lado mayor y JPEG al 72%: quedan unos 100 KB, así que con 1 GB del
+   plan gratis de Supabase caben miles. En modo local apretamos más,
+   porque el navegador solo da unos 5 MB de localStorage. */
+function compress(file, max, quality){
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, max / Math.max(img.width, img.height));
+      const w = Math.round(img.width * scale), h = Math.round(img.height * scale);
+      const c = document.createElement("canvas");
+      c.width = w; c.height = h;
+      c.getContext("2d").drawImage(img, 0, 0, w, h);
+      c.toBlob(b => b ? resolve(b) : reject(new Error("canvas")), "image/jpeg", quality);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("imagen")); };
+    img.src = url;
+  });
+}
+
+function blobToDataURL(blob){
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(blob);
+  });
+}
+
+async function uploadProof(file){
+  if(!file) return null;
+  const supa = State.store.mode === "supabase";
+  const blob = await compress(file, supa ? 900 : 600, supa ? 0.72 : 0.55);
+
+  if(!supa) return await blobToDataURL(blob);
+
+  const name = Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,8) + ".jpg";
+  const {error} = await SupaStore.client.storage
+    .from("pruebas").upload(name, blob, {contentType:"image/jpeg", upsert:false});
+  if(error) throw error;
+  return SupaStore.client.storage.from("pruebas").getPublicUrl(name).data.publicUrl;
+}
+
+function proofSheet(t){
+  sheet({
+    title: "Prueba de «" + t.title + "»",
+    desc: "Las fotos son opcionales: puedes marcarla como hecha sin ninguna. " +
+          "Si pones alguna, queda guardada en el historial.",
+    fields:[
+      {key:"before", type:"photo", label:"Antes", placeholder:"Foto del antes"},
+      {key:"after",  type:"photo", label:"Después", placeholder:"Foto del después"}
+    ],
+    submit:"Marcar como hecha",
+    onSubmit: async v => {
+      let before = null, after = null;
+      try{
+        before = await uploadProof(v.before);
+        after  = await uploadProof(v.after);
+      }catch(e){
+        return "No se han podido subir las fotos. Mira la cobertura e inténtalo otra vez.";
+      }
+      await completeTask(t, {before, after});
+    }
+  });
+}
+
+function viewProof(log){
+  const back = el("div","backdrop");
+  const box = el("div","sheet");
+  box.appendChild(el("h2", null, memberName(log.member_id) + " " + log.title));
+  box.appendChild(el("p","lead", ago(log.created_at)));
+
+  const grid = el("div","proof-view");
+  [["Antes", log.photo_before], ["Después", log.photo_after]].forEach(([cap, src]) => {
+    if(!src) return;
+    const fig = document.createElement("figure");
+    fig.appendChild(el("figcaption", null, cap));
+    const img = document.createElement("img");
+    img.src = src; img.alt = cap + " de " + log.title; img.loading = "lazy";
+    fig.appendChild(img);
+    grid.appendChild(fig);
+  });
+  box.appendChild(grid);
+
+  const row = el("div","row");
+  const close = el("button","btn","Cerrar");
+  close.onclick = () => back.remove();
+  row.appendChild(close);
+  box.appendChild(row);
+
+  back.onclick = e => { if(e.target === back) back.remove(); };
+  back.appendChild(box);
+  document.body.appendChild(back);
+}
+
+/* ============================================================
    RENDER
    ============================================================ */
 function render(){
-  if(!State.db) return;
+  if(!State.db || !State.me) return;
   renderHeader();
   if(State.zone === "nevera") renderNevera(); else renderTareas();
 }
@@ -606,16 +883,17 @@ function renderHeader(){
   $("view-nevera").hidden = !nevera;
   $("view-tareas").hidden = nevera;
   $("addbar").hidden = !nevera;
-  document.body.style.paddingBottom = "";
   $("app").style.paddingBottom = nevera ? "88px" : "24px";
 
   const btn = $("btn-me");
-  if(State.me){
-    btn.textContent = State.me.name.charAt(0).toUpperCase();
-    btn.style.background = State.me.color;
-  }
-  $("btn-newtask").hidden = !State.parentMode;
-  $("btn-newreward").hidden = !State.parentMode;
+  btn.textContent = State.me.name.charAt(0).toUpperCase();
+  btn.style.background = State.me.color;
+  btn.classList.toggle("parent", isParent());
+
+  const p = isParent();
+  $("btn-newtask").hidden = !p;
+  $("btn-newreward").hidden = !p;
+  $("btn-adjust").hidden = !p;
 }
 
 /* ---------- lista de la compra ---------- */
@@ -631,17 +909,18 @@ function renderNevera(){
   if(!pending.length){
     box.appendChild(el("div","empty","Nada pendiente. La nevera está a tope."));
   }else{
-    // agrupar por categoría, en el orden de CATS
     const groups = {};
     pending.forEach(i => { (groups[i.category || "Otros"] ||= []).push(i); });
     const ul = el("ul","list");
     CATS.filter(c => groups[c]).forEach(cat => {
-      const head = el("li","item");
-      head.style.cssText = "padding:7px 13px;background:var(--surface-2);border-bottom:1px solid var(--line-soft)";
-      const lbl = el("span", null, cat);
-      lbl.style.cssText = "font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);font-weight:700";
-      head.appendChild(lbl);
-      if(!State.superMode) ul.appendChild(head);
+      if(!State.superMode){
+        const head = el("li","item");
+        head.style.cssText = "padding:7px 13px;background:var(--surface-2);border-bottom:1px solid var(--line-soft)";
+        const lbl = el("span", null, cat);
+        lbl.style.cssText = "font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;color:var(--faint);font-weight:700";
+        head.appendChild(lbl);
+        ul.appendChild(head);
+      }
       groups[cat].sort((a,b)=> (a.created_at||"").localeCompare(b.created_at||""))
                  .forEach(i => ul.appendChild(itemRow(i)));
     });
@@ -728,7 +1007,8 @@ function renderTareas(){
 
   const sb = $("scoreboard"); sb.textContent = "";
   scores.forEach(({m,p}) => {
-    const c = el("div","score" + (p === top && p > 0 ? " leader" : ""));
+    const c = el(isParent() ? "button" : "div", "score" + (p === top && p > 0 ? " leader" : ""));
+    if(isParent()){ c.type = "button"; c.onclick = () => adjustPoints(m); }
     const nm = el("div","nm");
     const dot = el("span","dot"); dot.style.background = m.color;
     nm.appendChild(dot); nm.appendChild(document.createTextNode(m.name));
@@ -739,10 +1019,14 @@ function renderTareas(){
     sb.appendChild(c);
   });
 
-  // tareas
+  // ---- tareas ----
   const tb = $("list-tasks"); tb.textContent = "";
   const tasks = (State.db.tasks || []).filter(t => t.active !== false);
-  if(!tasks.length) tb.appendChild(el("div","empty","Todavía no hay tareas. Entra en modo padres para crearlas."));
+  if(!tasks.length){
+    tb.appendChild(el("div","empty", isParent()
+      ? "Todavía no hay tareas. Dale a «+ Nueva» para crear la primera."
+      : "Todavía no hay tareas. Que las cree papá o mamá."));
+  }
   tasks.forEach(t => {
     const row = el("div","task");
     const main = el("div","task-main");
@@ -757,16 +1041,23 @@ function renderTareas(){
     const b = el("button","doit","Hecho");
     b.onclick = () => completeTask(t);
     row.appendChild(b);
-    if(State.parentMode){
-      const d = el("button","del","✕");
-      d.setAttribute("aria-label","Borrar tarea " + t.title);
-      d.onclick = async () => { await State.store.remove("tasks", t.id); await refresh(); };
-      row.appendChild(d);
+
+    const cam = el("button","cambtn","📷");
+    cam.title = "Marcar como hecha con fotos de prueba";
+    cam.setAttribute("aria-label","Marcar " + t.title + " como hecha con fotos de prueba");
+    cam.onclick = () => proofSheet(t);
+    row.appendChild(cam);
+
+    if(isParent()){
+      const e = el("button","editbtn","✎");
+      e.setAttribute("aria-label","Editar " + t.title);
+      e.onclick = () => editTask(t);
+      row.appendChild(e);
     }
     tb.appendChild(row);
   });
 
-  // recompensas
+  // ---- recompensas ----
   const rb = $("list-rewards"); rb.textContent = "";
   const myPts = pointsOf(State.me.id);
   const rewards = (State.db.rewards || []).filter(r => r.active !== false).sort((a,b)=>a.cost-b.cost);
@@ -775,28 +1066,27 @@ function renderTareas(){
     const row = el("div","reward");
     const main = el("div","task-main");
     main.appendChild(el("div","task-title", r.title));
-    const pct = Math.min(100, Math.round(myPts / r.cost * 100));
-    const sub = el("div","task-sub", myPts >= r.cost ? "Ya puedes canjearla" : `Te faltan ${r.cost - myPts} puntos`);
-    main.appendChild(sub);
+    const pct = Math.max(0, Math.min(100, Math.round(myPts / r.cost * 100)));
+    main.appendChild(el("div","task-sub", myPts >= r.cost
+      ? "Ya puedes canjearla" : `Te faltan ${r.cost - myPts} puntos`));
     const bar = el("div","bar"); const fill = el("i"); fill.style.width = pct + "%"; bar.appendChild(fill);
     main.appendChild(bar);
     row.appendChild(main);
-    const cost = el("div","task-pts", r.cost + "");
-    row.appendChild(cost);
+    row.appendChild(el("div","task-pts", String(r.cost)));
     const b = el("button","doit","Canjear");
     b.disabled = myPts < r.cost;
     b.onclick = () => redeem(r);
     row.appendChild(b);
-    if(State.parentMode){
-      const d = el("button","del","✕");
-      d.setAttribute("aria-label","Borrar recompensa " + r.title);
-      d.onclick = async () => { await State.store.remove("rewards", r.id); await refresh(); };
-      row.appendChild(d);
+    if(isParent()){
+      const e = el("button","editbtn","✎");
+      e.setAttribute("aria-label","Editar " + r.title);
+      e.onclick = () => editReward(r);
+      row.appendChild(e);
     }
     rb.appendChild(row);
   });
 
-  // canjes pendientes
+  // ---- canjes pendientes ----
   const cb = $("list-redemptions"); cb.textContent = "";
   const pend = (State.db.redemptions || []).filter(r => r.status === "pendiente")
     .sort((a,b)=> (b.created_at||"").localeCompare(a.created_at||""));
@@ -807,7 +1097,7 @@ function renderTareas(){
     main.appendChild(el("div","task-title", r.title));
     main.appendChild(el("div","task-sub", `${memberName(r.member_id)} · ${r.cost} pts · ${ago(r.created_at)}`));
     row.appendChild(main);
-    if(State.parentMode){
+    if(isParent()){
       const ok = el("button","doit","Aprobar");
       ok.onclick = async () => {
         await State.store.update("redemptions", r.id, {status:"aprobado"});
@@ -827,34 +1117,91 @@ function renderTareas(){
     cb.appendChild(row);
   });
 
-  // feed
-  const fb = $("feed"); fb.textContent = "";
+  renderHistory();
+}
+
+function renderHistory(){
+  const box = $("history"); box.textContent = "";
   const events = [
     ...(State.db.logs||[]).map(l => ({
-      t:l.created_at,
-      txt:`${memberName(l.member_id)} hizo "${l.title}" (+${l.points})`
+      t:l.created_at, kind:"log", id:l.id, member:l.member_id,
+      label:l.title, delta:l.points || 0, log:l
     })),
-    ...(State.db.redemptions||[]).map(r => ({
-      t:r.created_at,
-      txt:`${memberName(r.member_id)} canjeó "${r.title}" (−${r.cost})`
+    ...(State.db.redemptions||[]).filter(r=>r.status!=="rechazado").map(r => ({
+      t:r.created_at, kind:"red", id:r.id, member:r.member_id,
+      label:"canjeó «" + r.title + "»", delta:-(r.cost||0)
     }))
-  ].sort((a,b)=> (b.t||"").localeCompare(a.t||"")).slice(0,12);
-  if(!events.length) fb.appendChild(el("div","empty","Todavía no ha pasado nada por aquí."));
-  events.forEach(e => {
-    const d = el("div");
-    d.appendChild(el("span",null,e.txt));
-    const tm = el("time",null, ago(e.t)); tm.dateTime = e.t;
-    d.appendChild(tm);
-    fb.appendChild(d);
+  ].sort((a,b)=> (b.t||"").localeCompare(a.t||""));
+
+  if(!events.length){
+    box.appendChild(el("div","empty","Todavía no ha pasado nada por aquí."));
+    $("btn-more-hist").hidden = true;
+    return;
+  }
+
+  events.slice(0, State.histLimit).forEach(e => {
+    const row = el("div","row-h");
+
+    const dot = el("span","dot"); dot.style.background = memberColor(e.member);
+    row.appendChild(dot);
+
+    const txt = el("div","txt");
+    const b = el("b", null, memberName(e.member));
+    txt.appendChild(b);
+    txt.appendChild(document.createTextNode(" " + (e.kind === "log" ? e.label : e.label)));
+    row.appendChild(txt);
+
+    const d = el("span","delta " + (e.delta >= 0 ? "up" : "down"),
+                 (e.delta >= 0 ? "+" : "−") + Math.abs(e.delta));
+    row.appendChild(d);
+
+    const tm = el("time", null, ago(e.t)); tm.dateTime = e.t;
+    row.appendChild(tm);
+
+    if(e.log && (e.log.photo_before || e.log.photo_after)){
+      const v = el("button","cambtn has","📷");
+      v.title = "Ver la prueba";
+      v.setAttribute("aria-label","Ver la prueba de " + e.label);
+      v.onclick = () => viewProof(e.log);
+      row.appendChild(v);
+    }
+
+    if(isParent()){
+      const u = el("button","del","↩");
+      u.title = "Deshacer";
+      u.setAttribute("aria-label","Deshacer");
+      u.onclick = () => undoEvent(e);
+      row.appendChild(u);
+    }
+    box.appendChild(row);
+  });
+
+  $("btn-more-hist").hidden = events.length <= State.histLimit;
+}
+
+function undoEvent(e){
+  sheet({
+    title:"¿Deshacer esto?",
+    desc:`${memberName(e.member)} ${e.label} (${e.delta >= 0 ? "+" : "−"}${Math.abs(e.delta)} pts). ` +
+         `Se borrará del historial y los puntos vuelven a como estaban.`,
+    submit:"Deshacer",
+    onSubmit: async () => {
+      await State.store.remove(e.kind === "log" ? "logs" : "redemptions", e.id);
+      toast("Deshecho");
+      await refresh();
+    }
   });
 }
 
-async function completeTask(t){
-  const row = {id:uid(), task_id:t.id, title:t.title, member_id:State.me.id,
-               points:t.points, created_at:now()};
+async function completeTask(t, proof){
+  const row = {id:uid(), task_id:t.id, title:'hizo "' + t.title + '"', member_id:State.me.id,
+               points:t.points, created_at:now(),
+               photo_before:(proof && proof.before) || null,
+               photo_after:(proof && proof.after) || null};
   State.db.logs.push(row);
   render();
-  toast(`+${t.points} puntos para ${State.me.name}`);
+  const conFoto = row.photo_before || row.photo_after;
+  toast(`+${t.points} puntos para ${State.me.name}` + (conFoto ? " · prueba guardada" : ""));
   await State.store.insert("logs", row);
   await refresh();
 }
@@ -869,64 +1216,289 @@ async function redeem(r){
   await refresh();
 }
 
+/* ---------- administración (solo padres) ---------- */
+function editTask(t){
+  sheet({
+    title: t ? "Editar tarea" : "Nueva tarea",
+    fields:[
+      {key:"title", label:"Tarea", value:t ? t.title : "", placeholder:"Sacar la basura"},
+      {key:"points", label:"Puntos", type:"number", value:t ? t.points : 10,
+       hint:"Lo que suma cada vez que alguien la marca como hecha."}
+    ],
+    submit: t ? "Guardar" : "Crear",
+    danger: t ? {label:"Borrar", onClick: async () => {
+      await State.store.remove("tasks", t.id); toast("Tarea borrada"); await refresh();
+    }} : null,
+    onSubmit: async v => {
+      if(!v.title) return "Ponle un nombre a la tarea";
+      const pts = parseInt(v.points, 10);
+      if(!pts || pts < 1) return "Los puntos tienen que ser un número mayor que 0";
+      if(t){
+        await State.store.update("tasks", t.id, {title:v.title, points:pts});
+        toast("Tarea actualizada");
+      }else{
+        await State.store.insert("tasks", {id:uid(), title:v.title, points:pts, active:true, created_at:now()});
+        toast("Tarea creada");
+      }
+      await refresh();
+    }
+  });
+}
+
+function editReward(r){
+  sheet({
+    title: r ? "Editar recompensa" : "Nueva recompensa",
+    fields:[
+      {key:"title", label:"Recompensa", value:r ? r.title : "", placeholder:"Noche de peli"},
+      {key:"cost", label:"Cuesta", type:"number", value:r ? r.cost : 50,
+       hint:"Puntos que hay que gastar para canjearla."}
+    ],
+    submit: r ? "Guardar" : "Crear",
+    danger: r ? {label:"Borrar", onClick: async () => {
+      await State.store.remove("rewards", r.id); toast("Recompensa borrada"); await refresh();
+    }} : null,
+    onSubmit: async v => {
+      if(!v.title) return "Ponle un nombre a la recompensa";
+      const cost = parseInt(v.cost, 10);
+      if(!cost || cost < 1) return "El coste tiene que ser un número mayor que 0";
+      if(r){
+        await State.store.update("rewards", r.id, {title:v.title, cost});
+        toast("Recompensa actualizada");
+      }else{
+        await State.store.insert("rewards", {id:uid(), title:v.title, cost, active:true, created_at:now()});
+        toast("Recompensa creada");
+      }
+      await refresh();
+    }
+  });
+}
+
+function adjustPoints(target){
+  const members = State.db.members || [];
+  sheet({
+    title:"Ajustar puntos",
+    desc:"Para premiar algo que no estaba en la lista, o para corregir un error.",
+    fields:[
+      {key:"who", label:"A quién", type:"select", value: target ? target.id : State.me.id,
+       options: members.map(m => ({value:m.id, label:m.name}))},
+      {key:"points", label:"Puntos", type:"number", value:"",
+       placeholder:"10  ·  -5", hint:"Pon un número negativo para restar."},
+      {key:"reason", label:"Motivo", value:"", placeholder:"Ayudó con la mudanza"}
+    ],
+    submit:"Aplicar",
+    onSubmit: async v => {
+      const pts = parseInt(v.points, 10);
+      if(!pts) return "Pon un número distinto de 0";
+      if(!v.reason) return "Escribe un motivo, para que se entienda en el historial";
+      const m = member(v.who);
+      await State.store.insert("logs", {
+        id:uid(), task_id:null, title:"— " + v.reason, member_id:v.who,
+        points:pts, created_at:now()
+      });
+      toast(`${pts > 0 ? "+" : "−"}${Math.abs(pts)} para ${m ? m.name : "esa persona"}`);
+      await refresh();
+    }
+  });
+}
+
 /* ============================================================
-   PANTALLA "QUIÉN ERES"
+   PERSONAS Y PIN
    ============================================================ */
 function showWho(){
   const g = $("who-grid"); g.textContent = "";
   (State.db.members || []).forEach(m => {
     const b = el("button","who-btn");
-    const av = el("span","avatar", m.name.charAt(0).toUpperCase());
+    const av = el("span","avatar" + (m.is_parent ? " parent" : ""), m.name.charAt(0).toUpperCase());
     av.style.background = m.color;
     b.appendChild(av);
-    const nm = el("span",null,m.name);
-    b.appendChild(nm);
-    b.onclick = () => pickMe(m);
+    const box = el("span");
+    box.appendChild(document.createTextNode(m.name));
+    if(m.is_parent) box.appendChild(el("small", null, "Puede configurar"));
+    b.appendChild(box);
+    b.onclick = () => startLogin(m);
     g.appendChild(b);
   });
   $("screen-who").hidden = false;
+  $("screen-pin").hidden = true;
+  $("screen-settings").hidden = true;
 }
 
-function pickMe(m){
+let pinTarget = null, pinMode = "enter";
+
+function startLogin(m){
+  pinTarget = m;
+  const hasPin = !!m.pin;
+  pinMode = hasPin ? "enter" : "create";
+
+  $("pin-title").textContent = hasPin ? "Hola, " + m.name : m.name + ", crea tu PIN";
+  $("pin-lead").textContent = hasPin
+    ? "Escribe tu PIN para entrar. Solo te lo pediremos esta vez en este móvil."
+    : (m.is_parent
+        ? "Como puedes configurar tareas y puntos, necesitas un PIN. Elige uno de 4 dígitos."
+        : "Elige un PIN de 4 dígitos para que nadie entre con tu nombre.");
+  $("pin-hint").textContent = hasPin ? "" : "Apúntalo donde no se te olvide.";
+  $("pin-ok").textContent = hasPin ? "Entrar" : "Crear PIN";
+  $("pin-skip").hidden = hasPin || m.is_parent;
+  $("pin-field").value = "";
+
+  $("screen-who").hidden = true;
+  $("screen-pin").hidden = false;
+  setTimeout(()=>$("pin-field").focus(), 80);
+}
+
+async function submitPin(){
+  const v = $("pin-field").value.trim();
+  if(pinMode === "enter"){
+    if(v !== pinTarget.pin){ toast("PIN incorrecto"); $("pin-field").value = ""; return; }
+    finishLogin(pinTarget);
+  }else{
+    if(!/^\d{4,6}$/.test(v)) return toast("El PIN son 4 a 6 dígitos");
+    await State.store.update("members", pinTarget.id, {pin:v});
+    pinTarget.pin = v;
+    finishLogin(pinTarget);
+    toast("PIN guardado");
+  }
+}
+
+function finishLogin(m){
   State.me = m;
   try{ localStorage.setItem(LS_ME, m.id); }catch(e){}
+  $("screen-pin").hidden = true;
   $("screen-who").hidden = true;
   render();
 }
 
-$("who-add").onclick = async () => {
-  const name = prompt("¿Cómo te llamas?");
-  if(!name || !name.trim()) return;
-  const m = {id:uid(), name:name.trim(), color:COLORS[(State.db.members||[]).length % COLORS.length],
-             is_parent:false, created_at:now()};
-  State.db.members.push(m);
-  await State.store.insert("members", m);
-  await refresh(true);
-  pickMe(m);
-};
+$("pin-ok").onclick = submitPin;
+$("pin-field").addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); submitPin(); } });
+$("pin-skip").onclick = () => finishLogin(pinTarget);
+$("pin-back").onclick = () => showWho();
+
+$("who-add").onclick = () => newPerson(true);
+
+function newPerson(thenLogin){
+  sheet({
+    title:"Añadir persona",
+    fields:[
+      {key:"name", label:"Nombre", value:"", placeholder:"Lucía"},
+      {key:"role", label:"Rol", type:"select", value:"no",
+       options:[{value:"no",label:"Miembro de la casa"},{value:"si",label:"Padre o madre (puede configurar)"}]}
+    ],
+    submit:"Añadir",
+    onSubmit: async v => {
+      if(!v.name) return "Escribe un nombre";
+      const n = (State.db.members||[]).length;
+      const m = {id:uid(), name:v.name, color:COLORS[n % COLORS.length],
+                 is_parent: v.role === "si", pin:null, created_at:now()};
+      State.db.members.push(m);
+      await State.store.insert("members", m);
+      await refresh(true);
+      if(thenLogin) startLogin(m); else { renderPeople(); toast(v.name + " añadida"); }
+    }
+  });
+}
+
+function editPerson(m){
+  sheet({
+    title:"Editar a " + m.name,
+    fields:[
+      {key:"name", label:"Nombre", value:m.name},
+      {key:"role", label:"Rol", type:"select", value: m.is_parent ? "si" : "no",
+       options:[{value:"no",label:"Miembro de la casa"},{value:"si",label:"Padre o madre (puede configurar)"}]},
+      {key:"pin", label:"PIN", value:"", placeholder: m.pin ? "Déjalo vacío para no cambiarlo" : "Sin PIN todavía",
+       hint: m.pin ? "Escribe «quitar» para borrarle el PIN y que elija uno nuevo." : ""}
+    ],
+    submit:"Guardar",
+    danger: m.id === State.me.id ? null : {label:"Quitar de la casa", onClick: async () => {
+      await State.store.remove("members", m.id);
+      toast(m.name + " ya no está en la casa");
+      await refresh(true); renderPeople();
+    }},
+    onSubmit: async v => {
+      if(!v.name) return "Escribe un nombre";
+      const patch = {name:v.name, is_parent: v.role === "si"};
+      if(v.pin.toLowerCase() === "quitar") patch.pin = null;
+      else if(v.pin){
+        if(!/^\d{4,6}$/.test(v.pin)) return "El PIN son 4 a 6 dígitos";
+        patch.pin = v.pin;
+      }
+      await State.store.update("members", m.id, patch);
+      toast("Guardado");
+      await refresh(true);
+      if(m.id === State.me.id){ State.me = member(m.id) || State.me; render(); }
+      renderPeople(); openSettings();
+    }
+  });
+}
+
+function renderPeople(){
+  const box = $("list-people");
+  if(!box) return;
+  box.textContent = "";
+  (State.db.members || []).forEach(m => {
+    const row = el("div","task");
+    const av = el("div","avatar" + (m.is_parent ? " parent" : ""), m.name.charAt(0).toUpperCase());
+    av.style.background = m.color;
+    row.appendChild(av);
+    const main = el("div","task-main");
+    main.appendChild(el("div","task-title", m.name));
+    main.appendChild(el("div","task-sub",
+      (m.is_parent ? "Padre o madre" : "Miembro") + (m.pin ? " · con PIN" : " · sin PIN")));
+    row.appendChild(main);
+    const e = el("button","editbtn","✎");
+    e.setAttribute("aria-label","Editar a " + m.name);
+    e.onclick = () => editPerson(m);
+    row.appendChild(e);
+    box.appendChild(row);
+  });
+}
 
 /* ============================================================
    AJUSTES
    ============================================================ */
 function openSettings(){
-  const s = $("screen-settings");
   $("set-avatar").textContent = State.me.name.charAt(0).toUpperCase();
   $("set-avatar").style.background = State.me.color;
+  $("set-avatar").classList.toggle("parent", isParent());
   $("set-name").textContent = State.me.name;
-  $("set-role").textContent = State.parentMode ? "Modo padres activo" : "Miembro de la casa";
+  $("set-role").textContent = isParent()
+    ? "Padre o madre · puedes configurar tareas, recompensas y puntos"
+    : "Miembro de la casa";
+
   const base = location.origin + location.pathname;
   $("url-nevera").textContent = base + "?z=nevera";
   $("url-tareas").textContent = base + "?z=tareas";
   $("mode-line").textContent = State.store.mode === "supabase"
     ? "Conectado a Supabase: todos los móviles ven lo mismo en tiempo real."
-    : "Modo local: los datos se guardan sólo en este móvil. Configura Supabase para sincronizar con el resto de la casa.";
-  $("parent-locked").hidden = State.parentMode;
-  $("parent-open").hidden = !State.parentMode;
-  s.hidden = false;
+    : "Modo local: los datos se guardan sólo en este móvil.";
+
+  $("admin-people").hidden = !isParent();
+  if(isParent()) renderPeople();
+
+  $("screen-settings").hidden = false;
 }
 $("btn-me").onclick = openSettings;
 $("settings-close").onclick = () => { $("screen-settings").hidden = true; render(); };
 $("set-change").onclick = () => { $("screen-settings").hidden = true; showWho(); };
+$("btn-newperson").onclick = () => newPerson(false);
+
+$("set-pin").onclick = () => {
+  sheet({
+    title:"Cambiar mi PIN",
+    fields:[
+      {key:"old", label:"PIN actual", value:"", placeholder: State.me.pin ? "····" : "No tienes"},
+      {key:"nuevo", label:"PIN nuevo", value:"", placeholder:"4 a 6 dígitos"}
+    ],
+    submit:"Cambiar",
+    onSubmit: async v => {
+      if(State.me.pin && v.old !== State.me.pin) return "El PIN actual no es correcto";
+      if(!/^\d{4,6}$/.test(v.nuevo)) return "El PIN nuevo son 4 a 6 dígitos";
+      await State.store.update("members", State.me.id, {pin:v.nuevo});
+      State.me.pin = v.nuevo;
+      toast("PIN cambiado");
+      await refresh(true);
+    }
+  });
+};
 
 document.querySelectorAll("[data-theme-set]").forEach(b => {
   b.onclick = () => {
@@ -937,63 +1509,20 @@ document.querySelectorAll("[data-theme-set]").forEach(b => {
   };
 });
 
-function cfg(){ return (State.db.config && State.db.config[0]) || {id:"main", pin:"1234"}; }
-
-$("pin-go").onclick = () => {
-  if($("pin-input").value === cfg().pin){
-    State.parentMode = true;
-    try{ sessionStorage.setItem("casa.parent","1"); }catch(e){}
-    $("pin-input").value = "";
-    openSettings(); render(); toast("Modo padres activado");
-  }else{
-    toast("PIN incorrecto");
-  }
-};
-$("pin-save").onclick = async () => {
-  const v = $("pin-new").value.trim();
-  if(v.length < 4) return toast("El PIN necesita al menos 4 dígitos");
-  const c = cfg();
-  if(State.db.config.length) await State.store.update("config", c.id, {pin:v});
-  else await State.store.insert("config", {id:"main", pin:v});
-  c.pin = v; $("pin-new").value = "";
-  toast("PIN guardado");
-};
-$("pin-out").onclick = () => {
-  State.parentMode = false;
-  try{ sessionStorage.removeItem("casa.parent"); }catch(e){}
-  openSettings(); render();
-};
-$("reset-all").onclick = async () => {
-  if(!confirm("Esto borra la lista, las tareas y los puntos de este dispositivo. ¿Seguro?")) return;
-  await State.store.wipe();
-  try{ localStorage.removeItem(LS_ME); }catch(e){}
-  location.reload();
-};
-
-/* ---- crear tareas / recompensas (modo padres) ---- */
-$("btn-newtask").onclick = async () => {
-  const title = prompt("Nombre de la tarea");
-  if(!title || !title.trim()) return;
-  const pts = parseInt(prompt("¿Cuántos puntos vale?","10"), 10);
-  if(!pts || pts < 1) return toast("Pon un número de puntos válido");
-  const row = {id:uid(), title:title.trim(), points:pts, active:true, created_at:now()};
-  State.db.tasks.push(row);
-  await State.store.insert("tasks", row);
-  await refresh();
-};
-$("btn-newreward").onclick = async () => {
-  const title = prompt("¿Qué se puede canjear?");
-  if(!title || !title.trim()) return;
-  const cost = parseInt(prompt("¿Cuántos puntos cuesta?","50"), 10);
-  if(!cost || cost < 1) return toast("Pon un coste válido");
-  const row = {id:uid(), title:title.trim(), cost, active:true, created_at:now()};
-  State.db.rewards.push(row);
-  await State.store.insert("rewards", row);
-  await refresh();
+$("reset-all").onclick = () => {
+  sheet({
+    title:"Olvidar este móvil",
+    desc:"Cerrará tu sesión aquí y volverá a preguntar quién eres. La lista, las tareas y los puntos de la casa NO se borran.",
+    submit:"Olvidar",
+    onSubmit: () => {
+      try{ localStorage.removeItem(LS_ME); }catch(e){}
+      location.reload();
+    }
+  });
 };
 
 /* ============================================================
-   CONTROLES DE LA LISTA
+   CONTROLES
    ============================================================ */
 $("add-btn").onclick = () => {
   const inp = $("add-input");
@@ -1020,6 +1549,10 @@ $("btn-zone").onclick = () => {
   history.replaceState(null,"",u);
   render();
 };
+$("btn-newtask").onclick = () => editTask(null);
+$("btn-newreward").onclick = () => editReward(null);
+$("btn-adjust").onclick = () => adjustPoints(null);
+$("btn-more-hist").onclick = () => { State.histLimit += 25; renderHistory(); };
 
 /* ============================================================
    ARRANQUE
@@ -1030,22 +1563,20 @@ async function refresh(skipRender){
   if(State.me){
     const fresh = member(State.me.id);
     if(fresh) State.me = fresh;
+    else{ State.me = null; showWho(); return; }
   }
   if(!skipRender) render();
 }
 
 async function start(){
-  // tema guardado
   try{
     const th = localStorage.getItem(LS_THEME);
     if(th === "light" || th === "dark") document.documentElement.setAttribute("data-theme", th);
   }catch(e){}
 
-  // zona por la etiqueta NFC
   const z = new URLSearchParams(location.search).get("z");
   if(z === "tareas" || z === "nevera") State.zone = z;
 
-  // backend
   if(SUPABASE_URL && SUPABASE_ANON_KEY){
     try{ await SupaStore.init(); State.store = SupaStore; }
     catch(e){ State.store = LocalStore; }
@@ -1056,16 +1587,12 @@ async function start(){
   await refresh(true);
   State.store.onChange(() => refresh());
 
-  try{ State.parentMode = sessionStorage.getItem("casa.parent") === "1"; }catch(e){}
-
-  // quién soy
   let meId = null;
   try{ meId = localStorage.getItem(LS_ME); }catch(e){}
   const me = meId && member(meId);
   if(me){ State.me = me; render(); }
-  else{ render(); showWho(); }
+  else showWho();
 
-  // refrescar los "hace X" cada minuto
   setInterval(() => { if(State.db && State.me) render(); }, 60000);
 }
 

@@ -86,13 +86,58 @@ Notas:
   es. Usa una etiqueta *on-metal*, o pon un trozo de cartón/fieltro debajo, o
   pégala en un imán de plástico.
 
-## 5. Modo padres
+## 5. Personas y perfil de padres
 
-Ajustes → *Modo padres* → PIN **1234** (cámbialo ahí mismo).
+Cada persona tiene su propio PIN. La primera vez que alguien elige su nombre
+en un móvil, la app le pide crear uno; a partir de ahí ese móvil recuerda
+quién es y no vuelve a preguntar.
 
-Con el modo padres activo se pueden crear y borrar tareas y recompensas, y
-aprobar o rechazar los canjes de puntos. Los puntos se descuentan al pedir el
-canje y vuelven si se rechaza.
+Quien esté marcado como **padre o madre** (`members.is_parent`) ve, además:
+
+- **+ Nueva** en Tareas y Recompensas, y un ✎ para editarlas o borrarlas.
+- **Ajustar puntos**: sumar o restar puntos a mano con un motivo, que queda
+  escrito en el historial. También se llega tocando la tarjeta de alguien en
+  el marcador.
+- **Aprobar o rechazar canjes.** Los puntos se descuentan al pedir el canje y
+  vuelven si se rechaza.
+- **Historial con ↩**: deshacer cualquier tarea o canje mal apuntado.
+- **Personas de la casa** en Ajustes: añadir gente, cambiar quién es padre y
+  resetear el PIN de alguien que lo haya olvidado (escribiendo `quitar` en el
+  campo del PIN, para que elija uno nuevo al entrar).
+
+Si alguien olvida su PIN y no hay ningún padre a mano, se borra desde
+Supabase: tabla `members`, columna `pin` a `null`.
+
+## 6. Pruebas con foto
+
+Cada tarea tiene, al lado de *Hecho*, un botón de cámara. Abre una ventana con
+dos huecos, **Antes** y **Después**, y marca la tarea como hecha igual que el
+botón normal.
+
+Son **opcionales**: los dos huecos, o solo uno, o ninguno. La idea es que estén
+ahí para cuando alguien dude, no que haya que fotografiarlo todo.
+
+Las fotos que se suban salen en el historial con un botón de cámara para
+verlas a tamaño completo.
+
+**Antes de usarlo hay que correr `supabase-migracion-3.sql`**, que añade las
+columnas y crea el almacén de fotos.
+
+Detalles de implementación:
+
+- Una foto de móvil son 3-5 MB. Antes de subirla, `compress()` la reduce a
+  900px de lado mayor y JPEG al 72% con un canvas: quedan unos 100 KB. Con el
+  1 GB del plan gratis caben del orden de diez mil.
+- En la tabla `logs` solo se guarda la URL (`photo_before`, `photo_after`).
+  El archivo vive en el bucket `pruebas` de Supabase Storage.
+- El bucket es **público**: cualquiera con la URL exacta de una foto la puede
+  ver. Las URLs llevan un nombre aleatorio y no hay listado, pero no es un
+  sitio para fotos que importen.
+- Se puede subir, no borrar. Así nadie tapa su rastro; para limpiar, el panel
+  de Supabase.
+- En modo local (sin Supabase) la foto se guarda como data URL dentro del
+  navegador, comprimida más fuerte. El navegador solo da unos 5 MB, así que
+  eso es para probar, no para usar.
 
 ---
 
